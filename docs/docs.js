@@ -119,6 +119,7 @@
             ['NC State — Tobamoviruses of tomato', 'https://content.ces.ncsu.edu/tobamoviruses-that-affect-tomato-tmv-tomv-tobrfv'],
             ['UMN Extension — Tomato viruses', 'https://extension.umn.edu/disease-management/tomato-viruses']] },
         { title: 'Dataset', links: [
+            ['PlantVillage dataset on Kaggle (used for training)', 'https://www.kaggle.com/datasets/mohitsingh1804/plantvillage'],
             ['PlantVillage dataset (GitHub)', 'https://github.com/spMohanty/PlantVillage-Dataset'],
             ['Mohanty et al. 2016 — Deep learning for image-based plant disease detection', 'https://www.frontiersin.org/journals/plant-science/articles/10.3389/fpls.2016.01419/full']] }
     ];

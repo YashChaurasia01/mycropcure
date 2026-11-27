@@ -7,6 +7,27 @@
     <title>Model Docs — CropCure</title>
     <meta name="description" content="Documentation for the CropCure plant-disease model: supported crops and conditions, network architecture and parameters, inference pipeline, delivery, dataset and treatment sources.">
     <meta name="theme-color" content="#08311f">
+    <meta name="author" content="Yash Chaurasia, Aashman Singh Verma, Parth Nagar">
+    <link rel="canonical" href="https://mycropcure.vercel.app/docs/">
+
+    <!-- Open Graph (WhatsApp, Discord, Facebook, LinkedIn, etc.) -->
+    <meta property="og:title" content="Model Docs — CropCure">
+    <meta property="og:description" content="Documentation for the CropCure plant-disease model: supported crops and conditions, network architecture and parameters, inference pipeline, delivery, dataset and treatment sources.">
+    <meta property="og:image" content="https://mycropcure.vercel.app/Images/meta/docs.webp">
+    <meta property="og:image:type" content="image/webp">
+    <meta property="og:image:width" content="1920">
+    <meta property="og:image:height" content="1080">
+    <meta property="og:image:alt" content="CropCure model documentation: 14 crop species, 38 output classes, 32.4M parameters, 124 MB of weights.">
+    <meta property="og:url" content="https://mycropcure.vercel.app/docs/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="CropCure">
+    <meta property="og:locale" content="en_US">
+    <!-- Twitter Card (Discord also reads this) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Model Docs — CropCure">
+    <meta name="twitter:description" content="Documentation for the CropCure plant-disease model: supported crops and conditions, network architecture and parameters, inference pipeline, delivery, dataset and treatment sources.">
+    <meta name="twitter:image" content="https://mycropcure.vercel.app/Images/meta/docs.webp">
+    <meta name="twitter:image:alt" content="CropCure model documentation: 14 crop species, 38 output classes, 32.4M parameters, 124 MB of weights.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -79,6 +100,7 @@
                 <li><a href="#dataset"><span class="docs-toc__num">07</span>Dataset &amp; accuracy</a></li>
                 <li><a href="#treatments"><span class="docs-toc__num">08</span>Treatment sources</a></li>
                 <li><a href="#limitations"><span class="docs-toc__num">09</span>Limitations</a></li>
+                <li><a href="#team"><span class="docs-toc__num">10</span>Team &amp; credits</a></li>
             </ol>
         </aside>
 
@@ -227,7 +249,9 @@
                     <span class="eyebrow">07 · Data</span>
                     <h2>Trained on the PlantVillage dataset.</h2>
                     <p>The model's 38 labels match the PlantVillage dataset exactly — an open collection of 54,306 leaf images
-                        across 14 crops, published by Hughes &amp; Salathé and used by Mohanty et al. (2016).</p>
+                        across 14 crops, published by Hughes &amp; Salathé and used by Mohanty et al. (2016). The team trained
+                        on the <a class="docs-link" href="https://www.kaggle.com/datasets/mohitsingh1804/plantvillage" target="_blank" rel="noopener">PlantVillage
+                        dataset on Kaggle</a>.</p>
                 </div>
                 <div class="docs-grid-2">
                     <div class="docs-note docs-note--info" data-reveal>
@@ -277,6 +301,93 @@
                     <svg class="icon"><use href="../Images/icons.svg?v=2#i-scan"/></svg>Try the diagnosis tool
                     <svg class="icon icon--arrow"><use href="../Images/icons.svg?v=2#i-arrow-right"/></svg>
                 </a>
+            </section>
+
+            <!-- ============ TEAM & CREDITS ============ -->
+            <section class="docs-section team" id="team" data-docs-section>
+                <div class="docs-head" data-reveal>
+                    <span class="eyebrow">10 · Team &amp; credits</span>
+                    <h2>The team behind the model.</h2>
+                    <p>CropCure was built by a team of three. The data and the trained model came first; tuning, the treatment
+                        knowledge and the product were built on top of them.</p>
+                </div>
+
+                <!-- Who did what -->
+                <div class="docs-table-wrap" data-reveal style="margin-bottom:28px">
+                    <table class="docs-table docs-credits">
+                        <thead><tr><th>Area</th><th>What it involved</th><th>By</th></tr></thead>
+                        <tbody>
+                            <tr><td><b>Dataset</b></td><td>Finding and preparing the PlantVillage leaf images (38 classes, 14 crops) from
+                                <a class="docs-link" href="https://www.kaggle.com/datasets/mohitsingh1804/plantvillage" target="_blank" rel="noopener">Kaggle</a>.</td>
+                                <td>Aashman Singh Verma, Parth Nagar</td></tr>
+                            <tr><td><b>Model training</b></td><td>Training the 5-block convolutional network (32.4 M parameters) that classifies a leaf into one of 38 conditions.</td>
+                                <td>Aashman Singh Verma, Parth Nagar</td></tr>
+                            <tr><td><b>Model tuning</b></td><td>Tuning the trained model and exporting it to TensorFlow.js so it runs in the browser.</td>
+                                <td>Yash Chaurasia</td></tr>
+                            <tr><td><b>Cure integration</b></td><td>Researching extension and IPM guidance and writing the treatment plan, action steps and product list for every class.</td>
+                                <td>Yash Chaurasia</td></tr>
+                            <tr><td><b>Website &amp; prototype</b></td><td>Designing and building the website, the diagnosis tool, model delivery (caching, preloading) and this documentation.</td>
+                                <td>Yash Chaurasia</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <ul class="team__grid">
+                    <li data-reveal>
+                        <article class="member" data-spotlight>
+                            <div class="member__top">
+                                <div class="member__avatar"><img src="../Images/teamicons/yash.webp" alt="Yash Chaurasia" width="320" height="320" loading="lazy" decoding="async"></div>
+                                <span class="member__badge">ML &amp; Full-Stack Engineer</span>
+                            </div>
+                            <h3>Yash Chaurasia</h3>
+                            <p class="member__role">Model tuning · Cure integration · Website &amp; prototype</p>
+                            <p class="member__bio">Fine-tuned the trained model, researched and integrated the treatment plans for every condition, and designed and built the complete website and working prototype.</p>
+                            <ul class="member__tags"><li>Model tuning</li><li>Treatment research</li><li>Web development</li><li>UI design</li></ul>
+                            <div class="member__links">
+                                <a class="member__link" href="https://www.linkedin.com/in/yashchaurasia01/" target="_blank" rel="noopener">
+                                    <svg class="icon"><use href="../Images/icons.svg?v=2#fa-linkedin-in"/></svg>LinkedIn</a>
+                                <a class="member__link member__link--ghost" href="https://yashexe.vercel.app" target="_blank" rel="noopener">
+                                    <svg class="icon"><use href="../Images/icons.svg?v=2#fa-globe"/></svg>Portfolio</a>
+                            </div>
+                        </article>
+                    </li>
+                    <li data-reveal style="--d:.1s">
+                        <article class="member" data-spotlight>
+                            <div class="member__top">
+                                <div class="member__avatar"><img src="../Images/teamicons/asv.webp" alt="Aashman Singh Verma" width="320" height="320" loading="lazy" decoding="async"></div>
+                                <span class="member__badge">ML Engineer</span>
+                            </div>
+                            <h3>Aashman Singh Verma</h3>
+                            <p class="member__role">Dataset · Model training</p>
+                            <p class="member__bio">Found and prepared the PlantVillage leaf-image dataset and trained the disease-classification model that powers every diagnosis.</p>
+                            <ul class="member__tags"><li>Data sourcing</li><li>Model training</li><li>Deep learning</li></ul>
+                            <div class="member__links">
+                                <a class="member__link" href="https://www.linkedin.com/in/asv11/" target="_blank" rel="noopener">
+                                    <svg class="icon"><use href="../Images/icons.svg?v=2#fa-linkedin-in"/></svg>LinkedIn</a>
+                                <a class="member__link member__link--ghost" href="https://not-aashman.github.io" target="_blank" rel="noopener">
+                                    <svg class="icon"><use href="../Images/icons.svg?v=2#fa-globe"/></svg>Portfolio</a>
+                            </div>
+                        </article>
+                    </li>
+                    <li data-reveal style="--d:.2s">
+                        <article class="member" data-spotlight>
+                            <div class="member__top">
+                                <div class="member__avatar"><img src="../Images/teamicons/pn.webp" alt="Parth Nagar" width="320" height="320" loading="lazy" decoding="async"></div>
+                                <span class="member__badge">ML Engineer</span>
+                            </div>
+                            <h3>Parth Nagar</h3>
+                            <p class="member__role">Dataset · Model training</p>
+                            <p class="member__bio">Found and prepared the PlantVillage leaf-image dataset and trained the disease-classification model that powers every diagnosis.</p>
+                            <ul class="member__tags"><li>Data sourcing</li><li>Model training</li><li>Deep learning</li></ul>
+                            <div class="member__links">
+                                <a class="member__link" href="https://www.linkedin.com/in/parth-nagar-430161273/" target="_blank" rel="noopener">
+                                    <svg class="icon"><use href="../Images/icons.svg?v=2#fa-linkedin-in"/></svg>LinkedIn</a>
+                                <a class="member__link member__link--ghost" href="https://parth-portfolio-gules.vercel.app" target="_blank" rel="noopener">
+                                    <svg class="icon"><use href="../Images/icons.svg?v=2#fa-globe"/></svg>Portfolio</a>
+                            </div>
+                        </article>
+                    </li>
+                </ul>
             </section>
         </main>
     </div>
