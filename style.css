@@ -2002,9 +2002,19 @@ html.no-scroll .scrollbar {
         justify-content: center;
     }
 
+    /* 2 × 2 grid of equal, fixed-width buttons, centred */
     .socials {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, 160px);
+        justify-content: center;
+    }
+
+    .socials li {
+        display: flex;
+    }
+
+    .social {
+        width: 100%;
     }
 
     .social__arrow {
