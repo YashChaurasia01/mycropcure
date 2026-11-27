@@ -46,12 +46,12 @@
             </a>
 
             <ul class="nav__links" id="nav-links">
-                <li><a href="../" class="nav__link"><svg class="icon"><use href="../Images/icons.svg#i-home"/></svg>Home</a></li>
-                <li><a href="../#about" class="nav__link"><svg class="icon"><use href="../Images/icons.svg#i-info"/></svg>About</a></li>
-                <li><a href="../#how" class="nav__link"><svg class="icon"><use href="../Images/icons.svg#i-category"/></svg>How it works</a></li>
-                <li><a href="../#roadmap" class="nav__link"><svg class="icon"><use href="../Images/icons.svg#i-rocket"/></svg>Roadmap</a></li>
-                <li><a href="../docs/" class="nav__link"><svg class="icon"><use href="../Images/icons.svg#i-book"/></svg>Docs</a></li>
-                <li><a href="#contact" class="nav__link"><svg class="icon"><use href="../Images/icons.svg#i-mail"/></svg>Contact</a></li>
+                <li><a href="../" class="nav__link"><svg class="icon"><use href="../Images/icons.svg?v=2#i-home"/></svg>Home</a></li>
+                <li><a href="../#about" class="nav__link"><svg class="icon"><use href="../Images/icons.svg?v=2#i-info"/></svg>About</a></li>
+                <li><a href="../#how" class="nav__link"><svg class="icon"><use href="../Images/icons.svg?v=2#i-category"/></svg>How it works</a></li>
+                <li><a href="../#roadmap" class="nav__link"><svg class="icon"><use href="../Images/icons.svg?v=2#i-rocket"/></svg>Roadmap</a></li>
+                <li><a href="../docs/" class="nav__link"><svg class="icon"><use href="../Images/icons.svg?v=2#i-book"/></svg>Docs</a></li>
+                <li><a href="#contact" class="nav__link"><svg class="icon"><use href="../Images/icons.svg?v=2#i-mail"/></svg>Contact</a></li>
             </ul>
 
             <div id="modelTag" class="status" role="status" aria-live="polite">
@@ -59,8 +59,8 @@
             </div>
 
             <button class="nav__toggle" type="button" aria-controls="nav-links" aria-expanded="false" aria-label="Open menu">
-                <svg class="icon icon--open"><use href="../Images/icons.svg#i-menu"/></svg>
-                <svg class="icon icon--close"><use href="../Images/icons.svg#i-close"/></svg>
+                <svg class="icon icon--open"><use href="../Images/icons.svg?v=2#i-menu"/></svg>
+                <svg class="icon icon--close"><use href="../Images/icons.svg?v=2#i-close"/></svg>
             </button>
         </nav>
     </header>
@@ -93,7 +93,7 @@
                     <div class="panel__head">
                         <h2 class="panel__title">1. Add a leaf photo</h2>
                         <button type="button" class="link-btn" id="resetBtn" hidden>
-                            <svg class="icon"><use href="../Images/icons.svg#i-refresh"/></svg>Start over
+                            <svg class="icon"><use href="../Images/icons.svg?v=2#i-refresh"/></svg>Start over
                         </button>
                     </div>
 
@@ -101,7 +101,7 @@
                         aria-label="Add a leaf photo: drag and drop, or press Enter to browse">
                         <div class="dropzone__empty">
                             <span class="dropzone__icon" aria-hidden="true">
-                                <svg class="icon"><use href="../Images/icons.svg#i-gallery-add"/></svg>
+                                <svg class="icon"><use href="../Images/icons.svg?v=2#i-gallery-add"/></svg>
                             </span>
                             <p class="dropzone__title">Drag &amp; drop a leaf photo</p>
                             <p class="dropzone__sub">or <span class="dropzone__browse">browse your files</span> · JPG, PNG or WebP</p>
@@ -112,19 +112,19 @@
                             <figcaption id="previewName"></figcaption>
                         </figure>
                         <div class="dropzone__drag" aria-hidden="true">
-                            <svg class="icon"><use href="../Images/icons.svg#i-image-up"/></svg>Drop to upload
+                            <svg class="icon"><use href="../Images/icons.svg?v=2#i-image-up"/></svg>Drop to upload
                         </div>
                     </div>
                     <input type="file" id="imageInput" class="visually-hidden" accept="image/*" tabindex="-1">
 
                     <button type="button" class="btn btn--accent btn--lg run-btn" id="runBtn" disabled>
-                        <svg class="icon"><use href="../Images/icons.svg#i-scan"/></svg>
+                        <svg class="icon"><use href="../Images/icons.svg?v=2#i-scan"/></svg>
                         <span id="runLabel">Run diagnosis</span>
                     </button>
 
                     <div class="samples">
                         <p class="samples__label">
-                            <svg class="icon"><use href="../Images/icons.svg#i-gallery"/></svg>
+                            <svg class="icon"><use href="../Images/icons.svg?v=2#i-gallery"/></svg>
                             No photo handy? Try a sample leaf
                         </p>
                         <div class="samples__grid" id="samples">
@@ -158,7 +158,7 @@
                     <div class="report__inner">
                     <div class="report__empty" id="reportEmpty">
                         <span class="report__empty-icon" aria-hidden="true">
-                            <svg class="icon"><use href="../Images/icons.svg#i-microscope"/></svg>
+                            <svg class="icon"><use href="../Images/icons.svg?v=2#i-microscope"/></svg>
                         </span>
                         <p class="report__empty-title">No diagnosis yet</p>
                         <p class="desc">Add a leaf photo or pick a sample, and the result with a recommended treatment
@@ -181,20 +181,20 @@
 
                         <div class="treatment">
                             <p class="treatment__label">
-                                <svg class="icon"><use href="../Images/icons.svg#i-heart-pulse"/></svg><span id="treatmentLabelText">Recommended treatment</span>
+                                <svg class="icon"><use href="../Images/icons.svg?v=2#i-heart-pulse"/></svg><span id="treatmentLabelText">Recommended treatment</span>
                             </p>
                             <p id="treatmentText" class="treatment__text"></p>
 
                             <div class="treatment__steps" id="treatmentSteps" hidden>
                                 <p class="treatment__heading">
-                                    <svg class="icon"><use href="../Images/icons.svg#i-tick"/></svg>Action plan
+                                    <svg class="icon"><use href="../Images/icons.svg?v=2#i-tick"/></svg>Action plan
                                 </p>
                                 <ol></ol>
                             </div>
 
                             <div class="treatment__products" id="treatmentProducts" hidden>
                                 <p class="treatment__heading">
-                                    <svg class="icon"><use href="../Images/icons.svg#i-shield-check"/></svg>Recommended products
+                                    <svg class="icon"><use href="../Images/icons.svg?v=2#i-shield-check"/></svg>Recommended products
                                 </p>
                                 <ul></ul>
                                 <p class="treatment__safety">
@@ -212,7 +212,7 @@
                     </div>
 
                     <p class="report__note">
-                        <svg class="icon"><use href="../Images/icons.svg#i-lamp"/></svg>
+                        <svg class="icon"><use href="../Images/icons.svg?v=2#i-lamp"/></svg>
                         Recommendations are general guidance. Check with your local agricultural extension service
                         before applying any treatment.
                     </p>
@@ -238,21 +238,21 @@
                 <p class="eyebrow eyebrow--light" data-reveal>Contact</p>
                 <h2 class="section-title section-title--light" data-split>Questions, feedback or partnerships?</h2>
                 <a class="footer__email" href="mailto:xukyosho@gmail.com" data-reveal style="--d:.15s">
-                    <svg class="icon"><use href="../Images/icons.svg#i-mail"/></svg>xukyosho@gmail.com
+                    <svg class="icon"><use href="../Images/icons.svg?v=2#i-mail"/></svg>xukyosho@gmail.com
                 </a>
                 <ul class="socials" data-reveal style="--d:.25s">
                     <li><a class="social" href="https://www.linkedin.com/in/yashchaurasia01/" target="_blank" rel="noopener" data-tooltip="LinkedIn" aria-label="LinkedIn">
-                        <span class="social__icon"><svg class="icon"><use href="../Images/icons.svg#fa-linkedin-in"/></svg></span><span class="social__label">LinkedIn</span>
-                        <svg class="social__arrow"><use href="../Images/icons.svg#i-arrow-up-right"/></svg></a></li>
+                        <span class="social__icon"><svg class="icon"><use href="../Images/icons.svg?v=2#fa-linkedin-in"/></svg></span><span class="social__label">LinkedIn</span>
+                        <svg class="social__arrow"><use href="../Images/icons.svg?v=2#i-arrow-up-right"/></svg></a></li>
                     <li><a class="social" href="https://www.instagram.com/yashc.exe/" target="_blank" rel="noopener" data-tooltip="Instagram" aria-label="Instagram">
-                        <span class="social__icon"><svg class="icon"><use href="../Images/icons.svg#fa-instagram"/></svg></span><span class="social__label">Instagram</span>
-                        <svg class="social__arrow"><use href="../Images/icons.svg#i-arrow-up-right"/></svg></a></li>
+                        <span class="social__icon"><svg class="icon"><use href="../Images/icons.svg?v=2#fa-instagram"/></svg></span><span class="social__label">Instagram</span>
+                        <svg class="social__arrow"><use href="../Images/icons.svg?v=2#i-arrow-up-right"/></svg></a></li>
                     <li><a class="social" href="https://github.com/YashChaurasia01" target="_blank" rel="noopener" data-tooltip="GitHub" aria-label="GitHub">
-                        <span class="social__icon"><svg class="icon"><use href="../Images/icons.svg#fa-github"/></svg></span><span class="social__label">GitHub</span>
-                        <svg class="social__arrow"><use href="../Images/icons.svg#i-arrow-up-right"/></svg></a></li>
+                        <span class="social__icon"><svg class="icon"><use href="../Images/icons.svg?v=2#fa-github"/></svg></span><span class="social__label">GitHub</span>
+                        <svg class="social__arrow"><use href="../Images/icons.svg?v=2#i-arrow-up-right"/></svg></a></li>
                     <li><a class="social" href="https://yashexe.vercel.app" target="_blank" rel="noopener" data-tooltip="Portfolio" aria-label="Portfolio">
-                        <span class="social__icon"><svg class="icon"><use href="../Images/icons.svg#fa-globe"/></svg></span><span class="social__label">Portfolio</span>
-                        <svg class="social__arrow"><use href="../Images/icons.svg#i-arrow-up-right"/></svg></a></li>
+                        <span class="social__icon"><svg class="icon"><use href="../Images/icons.svg?v=2#fa-globe"/></svg></span><span class="social__label">Portfolio</span>
+                        <svg class="social__arrow"><use href="../Images/icons.svg?v=2#i-arrow-up-right"/></svg></a></li>
                 </ul>
             </div>
             <img src="../Images/support.webp" alt="Illustration of a support agent on a video call"
@@ -267,9 +267,9 @@
                 <span class="brand__word">CropCure</span>
             </a>
             <p>© <span data-year>2026</span> CropCure by Yash. All rights reserved.</p>
-            <p class="footer__made">Designed with <svg class="icon icon--heart"><use href="../Images/icons.svg#i-heart"/></svg> by Natsu</p>
+            <p class="footer__made">Designed with <svg class="icon icon--heart"><use href="../Images/icons.svg?v=2#i-heart"/></svg> by Natsu</p>
             <a href="#top" class="to-top" aria-label="Back to top" data-tooltip="Back to top">
-                <svg class="icon"><use href="../Images/icons.svg#i-arrow-up"/></svg>
+                <svg class="icon"><use href="../Images/icons.svg?v=2#i-arrow-up"/></svg>
             </a>
         </div>
     </footer>

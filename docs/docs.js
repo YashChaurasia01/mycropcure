@@ -128,7 +128,7 @@
     const $$ = s => [...document.querySelectorAll(s)];
     const fmt = n => n.toLocaleString('en-US');
     const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    const ICONS = '../Images/icons.svg';
+    const ICONS = '../Images/icons.svg?v=2';
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     /* ---------------- Crops: bars + cards ---------------- */
