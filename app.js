@@ -563,9 +563,39 @@
             }
         };
 
+        /* Load the whole diagnosis page in the background so "Diagnose" opens instantly.
+           Chrome/Edge (incl. Android): full prerender — the page, its scripts, images and
+           the model run invisibly and are swapped in on click. Other browsers: prefetch
+           the page's files and the sample photos into the cache. */
+        const prepareModelPage = () => {
+            if (constrained || document.querySelector('script[type="speculationrules"]')) return;
+            const samples = ['tomato-late-blight', 'apple-scab', 'corn-common-rust', 'grape-black-rot',
+                'potato-early-blight', 'strawberry-healthy'].map(n => `${modelBase}demo/${n}.jpg`);
+
+            const prefetch = hrefs => hrefs.forEach(href => {
+                const link = document.createElement('link');
+                link.rel = 'prefetch';
+                link.href = href;
+                document.head.append(link);
+            });
+
+            if (window.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules')) {
+                const rules = document.createElement('script');
+                rules.type = 'speculationrules';
+                rules.textContent = JSON.stringify({
+                    prerender: [{ source: 'list', urls: [modelBase], eagerness: 'eager' }]
+                });
+                document.head.append(rules);
+                prefetch(samples);                       // lazy sample thumbnails aren't fetched during prerender
+            } else {
+                prefetch([modelBase, `${modelBase}styles.css`, `${modelBase}script.js`, ...samples]);
+            }
+        };
+
         // Start as soon as the home page has finished loading (its own content first)
-        if (document.readyState === 'complete') warmModel();
-        else window.addEventListener('load', warmModel, { once: true });
+        const startBackgroundLoading = () => { prepareModelPage(); warmModel(); };
+        if (document.readyState === 'complete') startBackgroundLoading();
+        else window.addEventListener('load', startBackgroundLoading, { once: true });
 
         $$(`a[href^="${modelBase}"]`).forEach(a => {
             a.addEventListener('pointerenter', warmModel, { once: true });

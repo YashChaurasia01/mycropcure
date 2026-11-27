@@ -86,7 +86,17 @@
 
 html {
     -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
     scrollbar-width: none;
+    overflow-x: clip;               /* nothing can widen the page and trigger a zoom-out/in */
+    touch-action: manipulation;     /* no double-tap zoom (quick taps on samples/links); pinch-zoom still works */
+}
+
+/* iOS zooms into any focused field smaller than 16px */
+input,
+select,
+textarea {
+    font-size: max(16px, 1em);
 }
 
 html.lenis,
@@ -2005,7 +2015,7 @@ html.no-scroll .scrollbar {
     /* 2 × 2 grid of equal, fixed-width buttons, centred */
     .socials {
         display: grid;
-        grid-template-columns: repeat(2, 160px);
+        grid-template-columns: repeat(2, minmax(0, 160px));   /* fixed 160px, but shrinks evenly on very small phones */
         justify-content: center;
     }
 

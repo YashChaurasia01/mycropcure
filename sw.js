@@ -34,15 +34,32 @@ self.addEventListener('fetch', event => {
     if (!isModelFile && !isRuntime) return;
 
     // Cache first: model files never change for a given MODEL_CACHE version
-    event.respondWith((async () => {
-        const cache = await caches.open(MODEL_CACHE);
-        const cached = await cache.match(request, { ignoreSearch: true, ignoreVary: true });
-        if (cached) return cached;
-
-        const response = await fetch(request);
-        if (response.ok || response.type === 'opaque') {
-            event.waitUntil(cache.put(request, response.clone()).catch(() => { /* quota / aborted */ }));
-        }
-        return response;
-    })());
+    event.respondWith(cacheFirst(request, event));
 });
+
+// The home page's background download and the prerendered model page can ask
+// for the same shard at the same time — share one network request per file.
+const inflight = new Map();
+const MATCH = { ignoreSearch: true, ignoreVary: true };
+
+async function cacheFirst(request, event) {
+    const cache = await caches.open(MODEL_CACHE);
+    const cached = await cache.match(request, MATCH);
+    if (cached) return cached;
+
+    let pending = inflight.get(request.url);
+    if (!pending) {
+        pending = (async () => {
+            const response = await fetch(request);
+            if (response.ok || response.type === 'opaque') {
+                try { await cache.put(request, response.clone()); } catch { /* quota / aborted */ }
+            }
+            return response;
+        })();
+        inflight.set(request.url, pending);
+        event.waitUntil(pending.catch(() => {}).finally(() => inflight.delete(request.url)));
+    }
+
+    const response = await pending;
+    return (await cache.match(request, MATCH)) || response.clone();
+}
