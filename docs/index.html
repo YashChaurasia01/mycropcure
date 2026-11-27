@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Docs — CropCure</title>
+    <meta name="description" content="Documentation for the CropCure plant-disease model: supported crops and conditions, network architecture and parameters, inference pipeline, delivery, dataset and treatment sources.">
+    <meta name="theme-color" content="#08311f">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500..900&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+
+    <!-- Shared theme, header, footer, scrollbar + docs-specific styles -->
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docs.css">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="../Images/favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../Images/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../Images/favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="../Images/favicon_io/site.webmanifest">
+
+    <script>document.documentElement.classList.add('js');</script>
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.min.js" defer></script>
+    <!-- docs.js builds the page content first, so app.js can animate it -->
+    <script src="docs.js" defer></script>
+    <script src="../app.js" defer></script>
+</head>
+
+<body class="page-docs" data-anchor-offset="92">
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <div class="scrollbar" id="scrollbar" aria-hidden="true">
+        <div class="scrollbar__thumb"></div>
+    </div>
+
+    <!-- ============================== HEADER (same as the other pages) ============================== -->
+    <header class="site-header">
+        <nav class="nav" aria-label="Primary">
+            <a href="../" class="brand" aria-label="CropCure home">
+                <img src="../Images/logo-sprout.webp" alt="" width="22" height="30" class="brand__mark">
+                <span class="brand__word">CropCure</span>
+            </a>
+
+            <ul class="nav__links" id="nav-links">
+                <li><a href="../" class="nav__link"><svg class="icon"><use href="../Images/icons.svg#i-home"/></svg>Home</a></li>
+                <li><a href="../#about" class="nav__link"><svg class="icon"><use href="../Images/icons.svg#i-info"/></svg>About</a></li>
+                <li><a href="../#how" class="nav__link"><svg class="icon"><use href="../Images/icons.svg#i-category"/></svg>How it works</a></li>
+                <li><a href="../#roadmap" class="nav__link"><svg class="icon"><use href="../Images/icons.svg#i-rocket"/></svg>Roadmap</a></li>
+                <li><a href="./" class="nav__link" aria-current="page"><svg class="icon"><use href="../Images/icons.svg#i-book"/></svg>Docs</a></li>
+                <li><a href="#contact" class="nav__link"><svg class="icon"><use href="../Images/icons.svg#i-mail"/></svg>Contact</a></li>
+                <li class="nav__cta-mobile"><a href="../model/" class="btn btn--accent">
+                    <svg class="icon"><use href="../Images/icons.svg#i-scan"/></svg>Diagnose a leaf</a></li>
+            </ul>
+
+            <a href="../model/" class="btn btn--accent btn--sm nav__cta">
+                <svg class="icon"><use href="../Images/icons.svg#i-scan"/></svg>Diagnose
+            </a>
+
+            <button class="nav__toggle" type="button" aria-controls="nav-links" aria-expanded="false" aria-label="Open menu">
+                <svg class="icon icon--open"><use href="../Images/icons.svg#i-menu"/></svg>
+                <svg class="icon icon--close"><use href="../Images/icons.svg#i-close"/></svg>
+            </button>
+        </nav>
+    </header>
+
+    <div class="docs-layout" id="top">
+        <!-- Contents: sticky sidebar on desktop, chip strip on phones -->
+        <aside class="docs-sidebar" aria-label="Contents">
+            <p class="docs-sidebar__label">Contents</p>
+            <ol class="docs-toc" id="docsToc">
+                <li><a href="#overview"><span class="docs-toc__num">01</span>Overview</a></li>
+                <li><a href="#crops"><span class="docs-toc__num">02</span>Supported crops</a></li>
+                <li><a href="#conditions"><span class="docs-toc__num">03</span>All 38 conditions</a></li>
+                <li><a href="#architecture"><span class="docs-toc__num">04</span>Model architecture</a></li>
+                <li><a href="#pipeline"><span class="docs-toc__num">05</span>Inference pipeline</a></li>
+                <li><a href="#delivery"><span class="docs-toc__num">06</span>Delivery &amp; performance</a></li>
+                <li><a href="#dataset"><span class="docs-toc__num">07</span>Dataset &amp; accuracy</a></li>
+                <li><a href="#treatments"><span class="docs-toc__num">08</span>Treatment sources</a></li>
+                <li><a href="#limitations"><span class="docs-toc__num">09</span>Limitations</a></li>
+            </ol>
+        </aside>
+
+        <main id="main" class="docs-main">
+            <!-- ============ OVERVIEW ============ -->
+            <section class="docs-hero" id="overview" data-docs-section>
+                <canvas class="particles" data-particles aria-hidden="true"></canvas>
+                <span class="eyebrow eyebrow--light" data-reveal><span class="pulse-dot" aria-hidden="true"></span>CropCure · Model documentation</span>
+                <h1 data-split>Inside the <em>CropCure</em> disease model.</h1>
+                <p class="docs-hero__lead" data-reveal style="--d:.3s">A convolutional neural network that looks at a single leaf photo and
+                    identifies one of 38 conditions across 14 crops, running entirely in the visitor's browser with
+                    TensorFlow.js. This page documents what it supports, how it is built and where the treatment advice comes from.</p>
+                <div class="docs-stats">
+                    <div class="docs-stat" data-reveal style="--d:.4s"><div class="docs-stat__value"><span data-count="14">14</span></div><div class="docs-stat__label">Crop species</div></div>
+                    <div class="docs-stat" data-reveal style="--d:.48s"><div class="docs-stat__value"><span data-count="38">38</span></div><div class="docs-stat__label">Output classes (26 diseases + 12 healthy)</div></div>
+                    <div class="docs-stat" data-reveal style="--d:.56s"><div class="docs-stat__value">32.4<small>M</small></div><div class="docs-stat__label">Parameters</div></div>
+                    <div class="docs-stat" data-reveal style="--d:.64s"><div class="docs-stat__value"><span data-count="124">124</span><small>MB</small></div><div class="docs-stat__label">Weights (float32, 31 shards)</div></div>
+                </div>
+            </section>
+
+            <!-- ============ CROPS ============ -->
+            <section class="docs-section" id="crops" data-docs-section>
+                <div class="docs-head" data-reveal>
+                    <span class="eyebrow">02 · Coverage</span>
+                    <h2>14 crops, 26 diseases.</h2>
+                    <p>Every crop has a "healthy" class, except orange and squash, which only appear diseased in the training data.
+                        Tomato has by far the most classes.</p>
+                </div>
+                <div class="docs-grid-2" style="margin-bottom:16px">
+                    <div class="docs-card" data-reveal>
+                        <h3 class="docs-card__title">Classes per crop</h3>
+                        <div class="docs-bars" id="cropBars"></div>
+                    </div>
+                    <div class="docs-card" data-reveal style="--d:.1s">
+                        <h3 class="docs-card__title">Conditions by cause</h3>
+                        <div class="docs-donut-wrap">
+                            <svg class="docs-donut" id="donut" viewBox="0 0 180 180" aria-hidden="true"><circle cx="90" cy="90" r="70" stroke="#eef3ea"/></svg>
+                            <ul class="docs-legend" id="donutLegend"></ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="docs-crops" id="cropCards"></div>
+            </section>
+
+            <!-- ============ CONDITIONS ============ -->
+            <section class="docs-section" id="conditions" data-docs-section>
+                <div class="docs-head" data-reveal>
+                    <span class="eyebrow">03 · Output classes</span>
+                    <h2>All 38 conditions, in model output order.</h2>
+                    <p>The index is the position in the model's 38-value output. The raw label is what the model returns; the
+                        app turns it into the readable crop and condition names shown here.</p>
+                </div>
+                <div class="docs-filters" id="filters" data-reveal></div>
+                <div class="docs-table-wrap" data-reveal>
+                    <table class="docs-table">
+                        <thead><tr><th>#</th><th>Crop</th><th>Condition</th><th>Cause</th><th>Type</th></tr></thead>
+                        <tbody id="conditionRows"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ============ ARCHITECTURE ============ -->
+            <section class="docs-section" id="architecture" data-docs-section>
+                <div class="docs-head" data-reveal>
+                    <span class="eyebrow">04 · Architecture</span>
+                    <h2>A VGG-style CNN with 32,418,762 parameters.</h2>
+                    <p>Five convolution blocks progressively shrink the 256 × 256 image to a 6 × 6 × 512 feature map, followed by
+                        a 1,500-unit dense layer and a 38-way softmax. The lime bar in each row shows its share of the parameters —
+                        the first dense layer alone holds about 85% of them, which is why the model is 124 MB.</p>
+                </div>
+                <div class="docs-arch" id="arch" data-reveal></div>
+
+                <div class="docs-grid-2" style="margin-top:20px">
+                    <div class="docs-card" data-reveal>
+                        <h3 class="docs-card__title">Model specification</h3>
+                        <dl class="docs-spec">
+                            <div><dt>Format</dt><dd>TensorFlow.js graph model</dd></div>
+                            <div><dt>Exported from</dt><dd>TensorFlow 2.17 (Keras Sequential)</dd></div>
+                            <div><dt>Converter</dt><dd>tfjs-converter 4.21.0</dd></div>
+                            <div><dt>Runtime</dt><dd>@tensorflow/tfjs 4.22.0 (WebGL)</dd></div>
+                            <div><dt>Input</dt><dd><code>[batch, 256, 256, 3]</code> float32</dd></div>
+                            <div><dt>Output</dt><dd><code>[batch, 38]</code> softmax</dd></div>
+                            <div><dt>Weights</dt><dd>float32, 25 tensors</dd></div>
+                            <div><dt>Files</dt><dd>model.json + 31 × 4 MB shards</dd></div>
+                        </dl>
+                    </div>
+                    <div class="docs-card" data-reveal style="--d:.1s">
+                        <h3 class="docs-card__title">Layer details</h3>
+                        <ul class="docs-list">
+                            <li>Each block: <code>Conv 3×3</code> (same padding, ReLU) → <code>Conv 3×3</code> (valid padding, ReLU) → <code>MaxPool 2×2</code>.</li>
+                            <li>Filters double every block: 32 → 64 → 128 → 256 → 512.</li>
+                            <li>Spatial size: 256 → 127 → 62 → 30 → 14 → 6.</li>
+                            <li>Flatten gives 6 × 6 × 512 = 18,432 features.</li>
+                            <li>No normalisation layer is baked in: the model expects raw pixel values 0–255.</li>
+                            <li>Dropout and other training-only layers are removed in the exported graph.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ PIPELINE ============ -->
+            <section class="docs-section" id="pipeline" data-docs-section>
+                <div class="docs-head" data-reveal>
+                    <span class="eyebrow">05 · Inference</span>
+                    <h2>From photo to treatment plan.</h2>
+                    <p>Everything below runs on the visitor's device. No image is ever uploaded to a server.</p>
+                </div>
+                <ol class="docs-pipeline">
+                    <li data-reveal><h3>Image in</h3><p>A photo arrives by file picker, drag and drop, or one of the six sample leaves. Uploads are also saved as a downscaled (≤ 768 px) JPEG in <code>localStorage</code> so progress survives leaving the page.</p></li>
+                    <li data-reveal style="--d:.05s"><h3>Pre-process</h3><p><code>tf.browser.fromPixels</code> reads the pixels, <code>resizeNearestNeighbor([256, 256])</code> resizes them, and the tensor is cast to float32 with a batch dimension — values stay in the 0–255 range.</p></li>
+                    <li data-reveal style="--d:.1s"><h3>Predict</h3><p>The graph model runs on the GPU through WebGL inside <code>tf.tidy</code>, so intermediate tensors are freed automatically. A warm-up prediction right after loading makes the first real result fast.</p></li>
+                    <li data-reveal style="--d:.15s"><h3>Rank</h3><p>The 38 softmax probabilities are sorted. The top class becomes the diagnosis with its confidence; the next two are shown as "other possibilities".</p></li>
+                    <li data-reveal style="--d:.2s"><h3>Explain</h3><p>The raw label (e.g. <code>Corn_(maize)___Common_rust_</code>) is turned into a readable crop and condition, then matched to its treatment plan: summary, action plan and recommended products.</p></li>
+                </ol>
+            </section>
+
+            <!-- ============ DELIVERY ============ -->
+            <section class="docs-section" id="delivery" data-docs-section>
+                <div class="docs-head" data-reveal>
+                    <span class="eyebrow">06 · Delivery</span>
+                    <h2>Making a 124 MB model feel instant.</h2>
+                    <p>The weights are kept at full float32 precision, so the site focuses on downloading them once and early.</p>
+                </div>
+                <div class="docs-grid-2">
+                    <div class="docs-card" data-reveal>
+                        <h3 class="docs-card__title">Loading strategy</h3>
+                        <ul class="docs-list">
+                            <li><b>Background preload:</b> once the home page has loaded, the runtime and all 31 shards download at low priority.</li>
+                            <li><b>Service worker cache:</b> the files are stored in Cache Storage, so later visits load the model from disk, not the network.</li>
+                            <li><b>Prerendering:</b> in Chrome and Edge the whole diagnosis page is prepared invisibly, so opening it is instant.</li>
+                            <li><b>Instant samples:</b> the six sample leaves have pre-computed results from this model, shown while the live model is still downloading.</li>
+                        </ul>
+                    </div>
+                    <div class="docs-card" data-reveal style="--d:.1s">
+                        <h3 class="docs-card__title">Measured locally (desktop)</h3>
+                        <div class="docs-bars docs-bars--timing" id="timingBars"></div>
+                        <p class="docs-card__foot">Measured on localhost with the model cached. A first visit also has to download
+                            124 MB, which depends on the connection (roughly a minute at 20 Mbit/s).</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ DATASET ============ -->
+            <section class="docs-section" id="dataset" data-docs-section>
+                <div class="docs-head" data-reveal>
+                    <span class="eyebrow">07 · Data</span>
+                    <h2>Trained on the PlantVillage dataset.</h2>
+                    <p>The model's 38 labels match the PlantVillage dataset exactly — an open collection of 54,306 leaf images
+                        across 14 crops, published by Hughes &amp; Salathé and used by Mohanty et al. (2016).</p>
+                </div>
+                <div class="docs-grid-2">
+                    <div class="docs-note docs-note--info" data-reveal>
+                        <svg class="icon"><use href="../Images/icons.svg#i-info"/></svg>
+                        <div>PlantVillage photos show a single leaf on a plain background in controlled lighting. Models trained on it
+                            score very highly on held-out PlantVillage images — the original study reported up to 99.35% with
+                            GoogLeNet — and this model classified all 18 sample photos tested during development correctly with
+                            ≥ 99% confidence.</div>
+                    </div>
+                    <div class="docs-note docs-note--warn" data-reveal style="--d:.1s">
+                        <svg class="icon"><use href="../Images/icons.svg#i-danger"/></svg>
+                        <div><b>No independent accuracy figure ships with this model.</b> The same study found accuracy dropped sharply
+                            (to about 31%) on photos taken in different conditions, so expect lower accuracy on real field photos
+                            with busy backgrounds, multiple leaves or unusual lighting. The sample photos are likely from the
+                            training data, so they demonstrate the tool rather than measure it.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ TREATMENT SOURCES ============ -->
+            <section class="docs-section" id="treatments" data-docs-section>
+                <div class="docs-head" data-reveal>
+                    <span class="eyebrow">08 · Treatment sources</span>
+                    <h2>Where the treatment advice comes from.</h2>
+                    <p>Each treatment plan (summary, action steps and named products) was compiled from university extension and IPM
+                        programmes. Brand names are examples — always check local registration and follow the product label.</p>
+                </div>
+                <div class="docs-sources" id="sources"></div>
+            </section>
+
+            <!-- ============ LIMITATIONS ============ -->
+            <section class="docs-section" id="limitations" data-docs-section>
+                <div class="docs-head" data-reveal>
+                    <span class="eyebrow">09 · Limitations</span>
+                    <h2>Know what it can't do.</h2>
+                </div>
+                <div class="docs-card" data-reveal>
+                    <ul class="docs-list">
+                        <li>It can only answer with one of its 38 classes — a crop or disease it was never trained on will be forced into the closest match, often with high confidence.</li>
+                        <li>It looks at one leaf. Fruit, stem, root and whole-plant symptoms are outside its scope.</li>
+                        <li>Similar-looking problems (nutrient deficiencies, herbicide damage, sunscald) can be mistaken for diseases.</li>
+                        <li>Confidence is the model's own score, not a calibrated probability of being right.</li>
+                        <li>Treatment advice is general guidance. Product registrations, doses and waiting periods differ by country and crop — confirm with a local agricultural extension service before spraying.</li>
+                    </ul>
+                </div>
+                <a class="btn btn--accent btn--lg docs-cta" href="../model/" data-reveal>
+                    <svg class="icon"><use href="../Images/icons.svg#i-scan"/></svg>Try the diagnosis tool
+                    <svg class="icon icon--arrow"><use href="../Images/icons.svg#i-arrow-right"/></svg>
+                </a>
+            </section>
+        </main>
+    </div>
+
+    <!-- ============================== CONTACT / FOOTER (same as the other pages) ============================== -->
+    <footer class="footer" id="contact">
+        <canvas class="particles" data-particles aria-hidden="true"></canvas>
+
+        <div class="container footer__top">
+            <div>
+                <p class="eyebrow eyebrow--light" data-reveal>Contact</p>
+                <h2 class="section-title section-title--light" data-split>Questions, feedback or partnerships?</h2>
+                <a class="footer__email" href="mailto:xukyosho@gmail.com" data-reveal style="--d:.15s">
+                    <svg class="icon"><use href="../Images/icons.svg#i-mail"/></svg>xukyosho@gmail.com
+                </a>
+                <ul class="socials" data-reveal style="--d:.25s">
+                    <li><a class="social" href="https://www.linkedin.com/in/yashchaurasia01/" target="_blank" rel="noopener" data-tooltip="LinkedIn" aria-label="LinkedIn">
+                        <span class="social__icon"><svg class="icon"><use href="../Images/icons.svg#fa-linkedin-in"/></svg></span><span class="social__label">LinkedIn</span>
+                        <svg class="social__arrow"><use href="../Images/icons.svg#i-arrow-up-right"/></svg></a></li>
+                    <li><a class="social" href="https://www.instagram.com/yashc.exe/" target="_blank" rel="noopener" data-tooltip="Instagram" aria-label="Instagram">
+                        <span class="social__icon"><svg class="icon"><use href="../Images/icons.svg#fa-instagram"/></svg></span><span class="social__label">Instagram</span>
+                        <svg class="social__arrow"><use href="../Images/icons.svg#i-arrow-up-right"/></svg></a></li>
+                    <li><a class="social" href="https://github.com/YashChaurasia01" target="_blank" rel="noopener" data-tooltip="GitHub" aria-label="GitHub">
+                        <span class="social__icon"><svg class="icon"><use href="../Images/icons.svg#fa-github"/></svg></span><span class="social__label">GitHub</span>
+                        <svg class="social__arrow"><use href="../Images/icons.svg#i-arrow-up-right"/></svg></a></li>
+                    <li><a class="social" href="https://yashexe.vercel.app" target="_blank" rel="noopener" data-tooltip="Portfolio" aria-label="Portfolio">
+                        <span class="social__icon"><svg class="icon"><use href="../Images/icons.svg#fa-globe"/></svg></span><span class="social__label">Portfolio</span>
+                        <svg class="social__arrow"><use href="../Images/icons.svg#i-arrow-up-right"/></svg></a></li>
+                </ul>
+            </div>
+            <img src="../Images/support.webp" alt="Illustration of a support agent on a video call"
+                width="960" height="836" loading="lazy" decoding="async" class="footer__img" data-reveal style="--d:.15s">
+        </div>
+
+        <p class="footer__word" aria-hidden="true" data-spotlight data-text="CropCure">CropCure</p>
+
+        <div class="container footer__bottom">
+            <a href="../" class="brand" aria-label="CropCure home">
+                <img src="../Images/logo-sprout.webp" alt="" width="22" height="30" class="brand__mark">
+                <span class="brand__word">CropCure</span>
+            </a>
+            <p>© <span data-year>2026</span> CropCure by Yash. All rights reserved.</p>
+            <p class="footer__made">Designed with <svg class="icon icon--heart"><use href="../Images/icons.svg#i-heart"/></svg> by Natsu</p>
+            <a href="#top" class="to-top" aria-label="Back to top" data-tooltip="Back to top">
+                <svg class="icon"><use href="../Images/icons.svg#i-arrow-up"/></svg>
+            </a>
+        </div>
+    </footer>
+</body>
+
+</html>

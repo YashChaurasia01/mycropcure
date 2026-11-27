@@ -407,25 +407,28 @@
         background: linear-gradient(180deg, var(--bg), var(--surface) 55%);
     }
 
+    /* Scroll container — smooth-scrolled by its own Lenis instance (script.js);
+       the native scrollbar is hidden in favour of the overlay one below. */
     .report__body {
         flex: 1 1 auto;
         min-height: 0;
-        display: flex;
-        flex-direction: column;
         margin-right: -10px;
-        padding-right: 10px;
+        padding-right: 14px;
         overflow-y: auto;
         overscroll-behavior: contain;
-        scrollbar-width: thin;
-        scrollbar-color: var(--accent) transparent;
+        scrollbar-width: none;
         /* soft fade at the bottom edge hints there's more to scroll */
         -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 28px), transparent);
         mask-image: linear-gradient(180deg, #000 calc(100% - 28px), transparent);
     }
 
-    .report__body::-webkit-scrollbar { width: 6px; }
-    .report__body::-webkit-scrollbar-thumb { border-radius: 999px; background: var(--accent); }
-    .report__body::-webkit-scrollbar-track { background: transparent; }
+    .report__body::-webkit-scrollbar { display: none; }
+
+    .report__inner {
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
 
     /* Empty state sits in the middle of the column */
     .report__empty {
@@ -433,8 +436,36 @@
         justify-content: center;
     }
 
-    .report__body > .report__note {
+    .report__inner > .report__note {
         margin-bottom: 28px;      /* clear the bottom fade */
+    }
+
+    /* Overlay scrollbar inside the report (same look as the page scrollbar) */
+    .scrollbar--panel {
+        position: absolute;
+        top: 0;
+        right: 2px;
+        bottom: auto;
+        width: 14px;
+        z-index: 5;
+    }
+
+    .scrollbar--panel .scrollbar__thumb {
+        right: 3px;
+        width: 4px;
+    }
+
+    .scrollbar--panel:hover .scrollbar__thumb,
+    .scrollbar--panel.is-dragging .scrollbar__thumb {
+        right: 2px;
+        width: 7px;
+    }
+}
+
+/* Phones/tablets: the report isn't a scroll area, so no panel scrollbar */
+@media (max-width: 960px) {
+    .scrollbar--panel {
+        display: none !important;
     }
 }
 

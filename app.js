@@ -59,7 +59,9 @@
 
         e.preventDefault();
         closeMenu();
-        lenis.scrollTo(target);           // eases with the same lerp as wheel scrolling
+        // eases with the same lerp as wheel scrolling; pages can set <body data-anchor-offset="96">
+        // so targets land below the fixed header
+        lenis.scrollTo(target, { offset: -(Number(document.body.dataset.anchorOffset) || 0) });
         history.replaceState(null, '', target === 0 ? location.pathname : id);
     });
 
@@ -157,13 +159,23 @@
     }
 
     const navLinks = new Map($$('.nav__link[href^="#"]').map(a => [a.getAttribute('href').slice(1), a]));
+    // A link to the page you're on (e.g. "Docs" on the docs page) holds the pill
+    // whenever no on-page section claims it.
+    const currentPageLink = $('.nav__link[aria-current="page"]');
     let activeLink = null;
 
     function setActive(link) {
+        link = link || currentPageLink;
         if (link === activeLink) return;
         activeLink = link;
         navLinks.forEach(a => a.classList.toggle('is-active', a === link));
+        if (currentPageLink) currentPageLink.classList.toggle('is-active', link === currentPageLink);
         placeIndicator(link);
+    }
+
+    if (currentPageLink) {
+        setActive(currentPageLink);
+        if (document.fonts) document.fonts.ready.then(() => placeIndicator(activeLink, false));
     }
 
     if (navLinks.size) {

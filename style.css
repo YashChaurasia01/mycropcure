@@ -1857,6 +1857,9 @@ html.no-scroll .scrollbar {
     .nav.is-open .nav__links li:nth-child(4) { transition-delay: .3s; }
     .nav.is-open .nav__links li:nth-child(5) { transition-delay: .35s; }
     .nav.is-open .nav__links li:nth-child(6) { transition-delay: .4s; }
+    .nav.is-open .nav__links li:nth-child(7) { transition-delay: .45s; }
+    .nav.is-open .nav__links li:nth-child(8) { transition-delay: .5s; }
+    .nav.is-open .nav__links li:nth-child(9) { transition-delay: .55s; }
 
     .nav__link,
     .site-header.is-scrolled .nav__link {

@@ -385,8 +385,7 @@
 
         reportEmpty.hidden = true;
         reportResult.hidden = false;
-        const reportBody = $('reportBody');
-        if (reportBody) reportBody.scrollTop = 0;   // desktop: report scrolls inside the card
+        reportScroll.toTop();                        // desktop: report scrolls inside the card
 
         let t = 0;
         t = generate($('resultCrop'), info.crop, t, 0.05) + 0.1;
@@ -511,6 +510,104 @@
             setReportState('Complete', 'is-ready');
         }
     }
+
+    /* ---------------------------------------------------------
+       Report panel scrolling (desktop card layout only): its own
+       Lenis instance for smooth scrolling + a custom overlay
+       scrollbar that matches the page one (drag, click track,
+       fades when idle). The page Lenis ignores wheel events here
+       because #reportBody has data-lenis-prevent.
+    --------------------------------------------------------- */
+    function setupReportScroll() {
+        const body = $('reportBody');
+        const inner = body && body.firstElementChild;
+        const bar = $('reportScrollbar');
+        const noop = { toTop() { if (body) body.scrollTop = 0; } };
+        if (!body || !inner || !bar) return noop;
+
+        const thumb = bar.firstElementChild;
+        const desktop = window.matchMedia('(min-width: 961px)');
+        let smooth = null, rafId = 0, hideTimer, dragging = false, grab = 0;
+
+        const metrics = () => {
+            const view = body.clientHeight;
+            const max = body.scrollHeight - view;
+            const track = bar.clientHeight;
+            const h = Math.max(36, (track * view) / Math.max(body.scrollHeight, 1));
+            return { max, h, travel: track - h };
+        };
+
+        function sync() {
+            if (!desktop.matches) { bar.hidden = true; return; }
+            if (body.scrollHeight - body.clientHeight <= 1) { bar.hidden = true; return; }
+            bar.hidden = false;                                // must be visible before measuring the track
+            bar.style.top = body.offsetTop + 'px';             // align the track with the scroll area
+            bar.style.height = body.clientHeight + 'px';
+            const { max, h, travel } = metrics();
+            thumb.style.height = h + 'px';
+            thumb.style.transform = `translateY(${(body.scrollTop / max) * travel}px)`;
+        }
+
+        function flash() {
+            bar.classList.add('is-visible');
+            clearTimeout(hideTimer);
+            hideTimer = setTimeout(() => bar.classList.remove('is-visible'), 1200);
+        }
+
+        const scrollToY = y => {
+            const { max, travel } = metrics();
+            const top = Math.min(1, Math.max(0, y / travel)) * max;
+            if (smooth) smooth.scrollTo(top);
+            else body.scrollTo({ top });
+        };
+
+        thumb.addEventListener('pointerdown', e => {
+            dragging = true;
+            grab = e.clientY - thumb.getBoundingClientRect().top;
+            thumb.setPointerCapture(e.pointerId);
+            bar.classList.add('is-dragging');
+            e.preventDefault();
+        });
+        thumb.addEventListener('pointermove', e => {
+            if (dragging) scrollToY(e.clientY - bar.getBoundingClientRect().top - grab);
+        });
+        const endDrag = () => { dragging = false; bar.classList.remove('is-dragging'); flash(); };
+        thumb.addEventListener('pointerup', endDrag);
+        thumb.addEventListener('pointercancel', endDrag);
+        bar.addEventListener('pointerdown', e => {               // click the empty track -> jump there
+            if (e.target === bar) scrollToY(e.clientY - bar.getBoundingClientRect().top - metrics().h / 2);
+        });
+
+        body.addEventListener('scroll', () => { sync(); flash(); }, { passive: true });
+        body.addEventListener('pointerenter', () => { sync(); flash(); });
+        new ResizeObserver(sync).observe(inner);
+        new ResizeObserver(sync).observe(body);
+
+        function setup() {
+            const want = desktop.matches && window.Lenis && !reduceMotion;
+            if (want && !smooth) {
+                smooth = new window.Lenis({ wrapper: body, content: inner, lerp: 0.08, smoothWheel: true });
+                const loop = t => { smooth.raf(t); rafId = requestAnimationFrame(loop); };
+                rafId = requestAnimationFrame(loop);
+            } else if (!want && smooth) {
+                cancelAnimationFrame(rafId);
+                smooth.destroy();
+                smooth = null;
+            }
+            sync();
+        }
+        desktop.addEventListener('change', setup);
+        setup();
+
+        return {
+            toTop() {
+                if (smooth) smooth.scrollTo(0, { immediate: true });
+                else body.scrollTop = 0;
+                sync();
+            }
+        };
+    }
+    const reportScroll = setupReportScroll();
 
     updateRunButton();
     restore();
