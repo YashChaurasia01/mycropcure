@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CropCure — AI Plant Disease Detection &amp; Treatment</title>
+    <meta name="description" content="CropCure detects 38 plant conditions across 14 crops from a single leaf photo and recommends a matching treatment. Runs entirely in your browser.">
+    <meta name="theme-color" content="#08311f">
+
+    <!-- Fonts: one request — Nunito (headings), Geist (body), Geist Mono (labels) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500..900&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="Images/favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="Images/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="Images/favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="Images/favicon_io/site.webmanifest">
+
+    <link rel="preload" as="image" href="Images/farmer.webp" type="image/webp">
+
+    <script>document.documentElement.classList.add('js');</script>
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.min.js" defer></script>
+    <script src="app.js" defer></script>
+</head>
+
+<body data-preload-model="model/">
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <div class="scrollbar" id="scrollbar" aria-hidden="true">
+        <div class="scrollbar__thumb"></div>
+    </div>
+
+    <!-- ============================== HEADER ============================== -->
+    <header class="site-header">
+        <nav class="nav" aria-label="Primary">
+            <a href="#home" class="brand" aria-label="CropCure home">
+                <img src="Images/logo-sprout.webp" alt="" width="22" height="30" class="brand__mark">
+                <span class="brand__word">CropCure</span>
+            </a>
+
+            <ul class="nav__links" id="nav-links">
+                <li><a href="#home" class="nav__link"><svg class="icon"><use href="Images/icons.svg#i-home"/></svg>Home</a></li>
+                <li><a href="#about" class="nav__link"><svg class="icon"><use href="Images/icons.svg#i-info"/></svg>About</a></li>
+                <li><a href="#how" class="nav__link"><svg class="icon"><use href="Images/icons.svg#i-category"/></svg>How it works</a></li>
+                <li><a href="#roadmap" class="nav__link"><svg class="icon"><use href="Images/icons.svg#i-rocket"/></svg>Roadmap</a></li>
+                <li><a href="#contact" class="nav__link"><svg class="icon"><use href="Images/icons.svg#i-mail"/></svg>Contact</a></li>
+                <li class="nav__cta-mobile"><a href="model/" class="btn btn--accent">
+                    <svg class="icon"><use href="Images/icons.svg#i-scan"/></svg>Diagnose a leaf</a></li>
+            </ul>
+
+            <a href="model/" class="btn btn--accent btn--sm nav__cta">
+                <svg class="icon"><use href="Images/icons.svg#i-scan"/></svg>Diagnose
+            </a>
+
+            <button class="nav__toggle" type="button" aria-controls="nav-links" aria-expanded="false" aria-label="Open menu">
+                <svg class="icon icon--open"><use href="Images/icons.svg#i-menu"/></svg>
+                <svg class="icon icon--close"><use href="Images/icons.svg#i-close"/></svg>
+            </button>
+        </nav>
+    </header>
+
+    <main id="main">
+
+        <!-- ============================== HERO ============================== -->
+        <section class="hero hero--home" id="home">
+            <canvas class="particles" data-particles aria-hidden="true"></canvas>
+
+            <div class="container hero__inner">
+                <div class="hero__copy">
+                    <p class="eyebrow eyebrow--light" data-reveal>
+                        <span class="pulse-dot" aria-hidden="true"></span>
+                        AI leaf diagnostics · runs in your browser
+                    </p>
+
+                    <h1 class="hero__title" data-split>
+                        From <em>problem</em> to <em>solution</em>. Cure your crops today.
+                    </h1>
+
+                    <p class="hero__lead" data-reveal style="--d:.35s">
+                        Snap a photo of a leaf. CropCure identifies the disease in seconds and tells you how to treat
+                        it, so you can act before it spreads across the field.
+                    </p>
+
+                    <div class="hero__actions" data-reveal style="--d:.5s">
+                        <a href="model/" class="btn btn--accent btn--lg">
+                            <svg class="icon"><use href="Images/icons.svg#i-scan"/></svg>
+                            Diagnose a leaf
+                            <svg class="icon icon--arrow"><use href="Images/icons.svg#i-arrow-right"/></svg>
+                        </a>
+                        <a href="#how" class="btn btn--ghost-light btn--lg">How it works</a>
+                    </div>
+
+                    <dl class="hero__stats" data-reveal style="--d:.65s">
+                        <div><dt>Conditions detected</dt><dd><span data-count="38">38</span></dd></div>
+                        <div><dt>Crop species</dt><dd><span data-count="14">14</span></dd></div>
+                        <div><dt>Photos uploaded</dt><dd>0</dd></div>
+                    </dl>
+                </div>
+
+                <div class="hero__visual" data-reveal style="--d:.2s">
+                    <img src="Images/farmer.webp" alt="Illustration of a farmer tending young crop seedlings"
+                        width="926" height="960" class="hero__img" data-speed="-0.06" fetchpriority="high">
+                </div>
+            </div>
+
+            <span class="scroll-cue" aria-hidden="true"></span>
+
+            <div class="marquee" aria-label="Supported crops">
+                <div class="marquee__track">
+                    <ul>
+                        <li>Apple</li><li>Blueberry</li><li>Cherry</li><li>Corn</li><li>Grape</li><li>Orange</li><li>Peach</li>
+                        <li>Bell pepper</li><li>Potato</li><li>Raspberry</li><li>Soybean</li><li>Squash</li><li>Strawberry</li><li>Tomato</li>
+                    </ul>
+                    <ul aria-hidden="true">
+                        <li>Apple</li><li>Blueberry</li><li>Cherry</li><li>Corn</li><li>Grape</li><li>Orange</li><li>Peach</li>
+                        <li>Bell pepper</li><li>Potato</li><li>Raspberry</li><li>Soybean</li><li>Squash</li><li>Strawberry</li><li>Tomato</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================== ABOUT ============================== -->
+        <section class="section about" id="about">
+            <div class="container">
+                <div class="section-intro">
+                    <div>
+                        <p class="eyebrow" data-reveal>About CropCure</p>
+                        <h2 class="section-title" data-split>Plant disease detection and cure, in one place.</h2>
+                    </div>
+                    <p class="lead" data-reveal style="--d:.15s">
+                        CropCure gives farmers and gardeners an accurate, fast way to identify what is affecting their
+                        plants, and the know-how to bring them back to full health.
+                    </p>
+                </div>
+
+                <div class="about__grid">
+                    <div class="about__visual" data-reveal>
+                        <img src="Images/researcher.webp" alt="Illustration of a researcher reviewing crop reports"
+                            width="954" height="960" loading="lazy" decoding="async" data-speed="-0.05">
+                    </div>
+
+                    <ol class="feature-list">
+                        <li class="feature" data-reveal>
+                            <span class="feature__icon"><svg class="icon"><use href="Images/icons.svg#i-scan"/></svg></span>
+                            <div>
+                                <h3>Disease detection</h3>
+                                <p class="desc">A deep-learning model analyses a photo of the affected leaf and returns
+                                    an instant diagnosis across 38 healthy and diseased conditions.</p>
+                            </div>
+                            <span class="feature__num">01</span>
+                        </li>
+                        <li class="feature" data-reveal style="--d:.1s">
+                            <span class="feature__icon"><svg class="icon"><use href="Images/icons.svg#i-heart-pulse"/></svg></span>
+                            <div>
+                                <h3>Cures &amp; treatments</h3>
+                                <p class="desc">Every diagnosis comes with a matched treatment, from organic practices
+                                    to targeted fungicides and bactericides, to help your plants recover.</p>
+                            </div>
+                            <span class="feature__num">02</span>
+                        </li>
+                        <li class="feature" data-reveal style="--d:.2s">
+                            <span class="feature__icon"><svg class="icon"><use href="Images/icons.svg#i-shield-check"/></svg></span>
+                            <div>
+                                <h3>Preventive measures</h3>
+                                <p class="desc">Prevention is better than cure. Learn the watering, soil-management and
+                                    crop-rotation practices that keep disease from taking hold.</p>
+                            </div>
+                            <span class="feature__num">03</span>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================== HOW IT WORKS ============================== -->
+        <section class="section how" id="how">
+            <div class="container">
+                <div class="section-intro">
+                    <div>
+                        <p class="eyebrow" data-reveal>How it works</p>
+                        <h2 class="section-title" data-split>Three steps from leaf to treatment.</h2>
+                    </div>
+                    <p class="lead" data-reveal style="--d:.15s">
+                        No sign-up and nothing to install. The whole diagnosis happens on your device.
+                    </p>
+                </div>
+
+                <ol class="steps">
+                    <li class="step" data-reveal>
+                        <div class="step__head">
+                            <span class="step__num">01</span>
+                            <span class="step__icon"><svg class="icon"><use href="Images/icons.svg#i-gallery-add"/></svg></span>
+                        </div>
+                        <h3>Add a leaf photo</h3>
+                        <p class="desc">Drop in a clear, well-lit photo of a single leaf, or pick one of the sample
+                            leaves to see it in action.</p>
+                    </li>
+                    <li class="step" data-reveal style="--d:.15s">
+                        <div class="step__head">
+                            <span class="step__num">02</span>
+                            <span class="step__icon"><svg class="icon"><use href="Images/icons.svg#i-cpu"/></svg></span>
+                        </div>
+                        <h3>AI analyses it locally</h3>
+                        <p class="desc">The model runs right in your browser with TensorFlow.js. Your photo never
+                            leaves your device.</p>
+                    </li>
+                    <li class="step" data-reveal style="--d:.3s">
+                        <div class="step__head">
+                            <span class="step__num">03</span>
+                            <span class="step__icon"><svg class="icon"><use href="Images/icons.svg#i-tick"/></svg></span>
+                        </div>
+                        <h3>Get a treatment plan</h3>
+                        <p class="desc">See the crop, the condition and how confident the model is, together with a
+                            recommended treatment.</p>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- ============================== DIAGNOSE (model link card) ============================== -->
+        <section class="section diagnose" id="diagnose">
+            <div data-reveal>
+                <a href="model/" class="diagnose__card" data-spotlight>
+                    <span class="diagnose__glow" aria-hidden="true"></span>
+                    <div class="diagnose__copy">
+                        <span class="tag tag--live"><span class="pulse-dot" aria-hidden="true"></span>Live now</span>
+                        <h2 class="section-title section-title--light">Disease detection &amp; cure.</h2>
+                        <p class="lead lead--light">
+                            Upload a leaf, or try one of our samples, and get a diagnosis with a recommended
+                            treatment in seconds.
+                        </p>
+                        <ul class="ticks">
+                            <li><svg class="icon"><use href="Images/icons.svg#i-tick"/></svg>Detects 38 conditions across 14 crops</li>
+                            <li><svg class="icon"><use href="Images/icons.svg#i-tick"/></svg>Shows how confident the model is</li>
+                            <li><svg class="icon"><use href="Images/icons.svg#i-tick"/></svg>Recommends a matching treatment</li>
+                        </ul>
+                        <span class="diagnose__cta">Open the diagnosis tool
+                            <span class="diagnose__cta-chip"><svg class="icon"><use href="Images/icons.svg#i-arrow-right"/></svg></span></span>
+                    </div>
+                    <div class="diagnose__media">
+                        <video class="bg-video" muted loop playsinline preload="none"
+                            poster="Images/services-loop-poster.webp" aria-hidden="true">
+                            <source src="Images/services-loop.av1.webm" type='video/webm; codecs="av01.0.08M.08"'>
+                            <source src="Images/services-loop.vp9.webm" type='video/webm; codecs="vp9"'>
+                        </video>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- ============================== ROADMAP ============================== -->
+        <section class="section roadmap" id="roadmap">
+            <!-- Full-width illustration (tablet & desktop) -->
+            <div class="roadmap__bg" aria-hidden="true">
+                <img src="Images/roadmap-robot-1400.webp"
+                    srcset="Images/roadmap-robot-1400.webp 1400w, Images/roadmap-robot.webp 2400w"
+                    sizes="100vw" alt="" width="2400" height="1200" loading="lazy" decoding="async">
+            </div>
+
+            <div class="container roadmap__grid">
+              <div class="roadmap__content">
+                <div class="roadmap__intro">
+                    <p class="eyebrow" data-reveal>Roadmap</p>
+                    <h2 class="section-title" data-split>What's coming to CropCure.</h2>
+                    <p class="lead" data-reveal style="--d:.15s">Features we are building next, to take you from a
+                        single diagnosis to a complete crop-care plan.</p>
+                    <!-- Phone-only illustration -->
+                    <img src="Images/ai-assistant.webp" alt="Illustration of an AI assistant holding a tablet"
+                        width="960" height="893" loading="lazy" decoding="async" class="roadmap__img" data-reveal style="--d:.25s">
+                </div>
+
+                <ol class="roadmap__list">
+                    <li class="roadmap__item" data-reveal>
+                        <span class="roadmap__icon"><svg class="icon"><use href="Images/icons.svg#i-sparkles"/></svg></span>
+                        <div>
+                            <h3>Built-in AI advisor</h3>
+                            <p class="desc">An assistant that stays current with plant-care research and gives
+                                real-time treatment advice, so your plants recover faster.</p>
+                        </div>
+                        <span class="tag">Planned</span>
+                    </li>
+                    <li class="roadmap__item" data-reveal style="--d:.05s">
+                        <span class="roadmap__icon"><svg class="icon"><use href="Images/icons.svg#i-calendar"/></svg></span>
+                        <div>
+                            <h3>7-day weather forecasts</h3>
+                            <p class="desc">Local forecasts to plan irrigation around rainfall and time fertiliser
+                                applications to the weather.</p>
+                        </div>
+                        <span class="tag">Planned</span>
+                    </li>
+                    <li class="roadmap__item" data-reveal style="--d:.1s">
+                        <span class="roadmap__icon"><svg class="icon"><use href="Images/icons.svg#i-cloud-sun"/></svg></span>
+                        <div>
+                            <h3>Climate-based crop suggestions</h3>
+                            <p class="desc">Recommendations for the best crops to plant in your area, based on the
+                                season's predicted weather, to maximise yield.</p>
+                        </div>
+                        <span class="tag">Planned</span>
+                    </li>
+                    <li class="roadmap__item" data-reveal style="--d:.15s">
+                        <span class="roadmap__icon"><svg class="icon"><use href="Images/icons.svg#i-water"/></svg></span>
+                        <div>
+                            <h3>Smart irrigation</h3>
+                            <p class="desc">Watering schedules built from weekly forecasts and real-time humidity,
+                                keeping moisture optimal while conserving water.</p>
+                        </div>
+                        <span class="tag">Planned</span>
+                    </li>
+                    <li class="roadmap__item" data-reveal style="--d:.2s">
+                        <span class="roadmap__icon"><svg class="icon"><use href="Images/icons.svg#i-shop"/></svg></span>
+                        <div>
+                            <h3>In-app treatment store</h3>
+                            <p class="desc">Order the remedies and crop-protection products your diagnosis calls
+                                for, all from one place.</p>
+                        </div>
+                        <span class="tag">Planned</span>
+                    </li>
+                    <li class="roadmap__item" data-reveal style="--d:.25s">
+                        <span class="roadmap__icon"><svg class="icon"><use href="Images/icons.svg#i-mobile"/></svg></span>
+                        <div>
+                            <h3>Android app</h3>
+                            <p class="desc">CropCure in your pocket, so you can diagnose crops right where they grow.</p>
+                        </div>
+                        <span class="tag">Planned</span>
+                    </li>
+                </ol>
+              </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ============================== CONTACT / FOOTER ============================== -->
+    <footer class="footer" id="contact">
+        <canvas class="particles" data-particles aria-hidden="true"></canvas>
+
+        <div class="container footer__top">
+            <div>
+                <p class="eyebrow eyebrow--light" data-reveal>Contact</p>
+                <h2 class="section-title section-title--light" data-split>Questions, feedback or partnerships?</h2>
+                <a class="footer__email" href="mailto:xukyosho@gmail.com" data-reveal style="--d:.15s">
+                    <svg class="icon"><use href="Images/icons.svg#i-mail"/></svg>xukyosho@gmail.com
+                </a>
+                <ul class="socials" data-reveal style="--d:.25s">
+                    <li><a class="social" href="https://www.linkedin.com/in/yashchaurasia01/" target="_blank" rel="noopener" data-tooltip="LinkedIn" aria-label="LinkedIn">
+                        <span class="social__icon"><svg class="icon"><use href="Images/icons.svg#fa-linkedin-in"/></svg></span><span class="social__label">LinkedIn</span>
+                        <svg class="social__arrow"><use href="Images/icons.svg#i-arrow-up-right"/></svg></a></li>
+                    <li><a class="social" href="https://www.instagram.com/yashc.exe/" target="_blank" rel="noopener" data-tooltip="Instagram" aria-label="Instagram">
+                        <span class="social__icon"><svg class="icon"><use href="Images/icons.svg#fa-instagram"/></svg></span><span class="social__label">Instagram</span>
+                        <svg class="social__arrow"><use href="Images/icons.svg#i-arrow-up-right"/></svg></a></li>
+                    <li><a class="social" href="https://github.com/YashChaurasia01" target="_blank" rel="noopener" data-tooltip="GitHub" aria-label="GitHub">
+                        <span class="social__icon"><svg class="icon"><use href="Images/icons.svg#fa-github"/></svg></span><span class="social__label">GitHub</span>
+                        <svg class="social__arrow"><use href="Images/icons.svg#i-arrow-up-right"/></svg></a></li>
+                    <li><a class="social" href="https://yashexe.vercel.app" target="_blank" rel="noopener" data-tooltip="Portfolio" aria-label="Portfolio">
+                        <span class="social__icon"><svg class="icon"><use href="Images/icons.svg#fa-globe"/></svg></span><span class="social__label">Portfolio</span>
+                        <svg class="social__arrow"><use href="Images/icons.svg#i-arrow-up-right"/></svg></a></li>
+                </ul>
+            </div>
+            <img src="Images/support.webp" alt="Illustration of a support agent on a video call"
+                width="960" height="836" loading="lazy" decoding="async" class="footer__img" data-reveal style="--d:.15s">
+        </div>
+
+        <p class="footer__word" aria-hidden="true" data-spotlight data-text="CropCure">CropCure</p>
+
+        <div class="container footer__bottom">
+            <a href="#home" class="brand" aria-label="Back to top">
+                <img src="Images/logo-sprout.webp" alt="" width="22" height="30" class="brand__mark">
+                <span class="brand__word">CropCure</span>
+            </a>
+            <p>© <span data-year>2026</span> CropCure by Yash. All rights reserved.</p>
+            <p class="footer__made">Designed with <svg class="icon icon--heart"><use href="Images/icons.svg#i-heart"/></svg> by Natsu</p>
+            <a href="#home" class="to-top" aria-label="Back to top" data-tooltip="Back to top">
+                <svg class="icon"><use href="Images/icons.svg#i-arrow-up"/></svg>
+            </a>
+        </div>
+    </footer>
+</body>
+
+</html>

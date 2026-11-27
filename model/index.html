@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnose a Leaf — CropCure</title>
+    <meta name="description" content="Upload a leaf photo or try a sample and get an instant plant disease diagnosis with a recommended treatment. Runs entirely in your browser.">
+    <meta name="theme-color" content="#08311f">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500..900&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+
+    <!-- Shared theme, header, footer, scrollbar + page-specific styles -->
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="styles.css">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="../Images/favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../Images/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../Images/favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="../Images/favicon_io/site.webmanifest">
+
+    <script>document.documentElement.classList.add('js');</script>
+    <!-- Pinned: the model was converted with tfjs-converter 4.21, so stay on the 4.x line -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.min.js" defer></script>
+    <script src="../app.js" defer></script>
+    <script src="script.js" defer></script>
+</head>
+
+<body class="page-model">
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <div class="scrollbar" id="scrollbar" aria-hidden="true">
+        <div class="scrollbar__thumb"></div>
+    </div>
+
+    <!-- ============================== HEADER (same as home) ============================== -->
+    <header class="site-header">
+        <nav class="nav" aria-label="Primary">
+            <a href="../" class="brand" aria-label="CropCure home">
+                <img src="../Images/logo-sprout.webp" alt="" width="22" height="30" class="brand__mark">
+                <span class="brand__word">CropCure</span>
+            </a>
+
+            <ul class="nav__links" id="nav-links">
+                <li><a href="../" class="nav__link"><svg class="icon"><use href="../Images/icons.svg#i-home"/></svg>Home</a></li>
+                <li><a href="../#about" class="nav__link"><svg class="icon"><use href="../Images/icons.svg#i-info"/></svg>About</a></li>
+                <li><a href="../#how" class="nav__link"><svg class="icon"><use href="../Images/icons.svg#i-category"/></svg>How it works</a></li>
+                <li><a href="../#roadmap" class="nav__link"><svg class="icon"><use href="../Images/icons.svg#i-rocket"/></svg>Roadmap</a></li>
+                <li><a href="#contact" class="nav__link"><svg class="icon"><use href="../Images/icons.svg#i-mail"/></svg>Contact</a></li>
+            </ul>
+
+            <div id="modelTag" class="status" role="status" aria-live="polite">
+                <span class="status__dot" aria-hidden="true"></span><span class="status__text">Loading model…</span>
+            </div>
+
+            <button class="nav__toggle" type="button" aria-controls="nav-links" aria-expanded="false" aria-label="Open menu">
+                <svg class="icon icon--open"><use href="../Images/icons.svg#i-menu"/></svg>
+                <svg class="icon icon--close"><use href="../Images/icons.svg#i-close"/></svg>
+            </button>
+        </nav>
+    </header>
+
+    <main id="main">
+        <!-- ============================== HERO ============================== -->
+        <section class="hero hero--tool" id="home">
+            <canvas class="particles" data-particles aria-hidden="true"></canvas>
+            <div class="container hero-tool__inner">
+                <p class="eyebrow eyebrow--light" data-reveal>
+                    <span class="pulse-dot" aria-hidden="true"></span>
+                    Diagnosis tool · 38 conditions · 14 crops
+                </p>
+                <h1 class="hero__title hero-tool__title" data-split>Know what's on the leaf before it <em>spreads</em>.</h1>
+                <p class="hero__lead" data-reveal style="--d:.3s">
+                    Add a photo of a single leaf, or try a sample below. The model runs entirely in your browser, so
+                    your photo never leaves your device.
+                </p>
+            </div>
+        </section>
+
+        <!-- ============================== TOOL ============================== -->
+        <section class="tool" id="tool">
+            <div class="container tool__grid">
+
+                <!-- Upload -->
+                <div class="panel uploader" data-reveal>
+                    <div class="panel__head">
+                        <h2 class="panel__title">1. Add a leaf photo</h2>
+                        <button type="button" class="link-btn" id="resetBtn" hidden>
+                            <svg class="icon"><use href="../Images/icons.svg#i-refresh"/></svg>Start over
+                        </button>
+                    </div>
+
+                    <div class="dropzone" id="dropzone" role="button" tabindex="0"
+                        aria-label="Add a leaf photo: drag and drop, or press Enter to browse">
+                        <div class="dropzone__empty">
+                            <span class="dropzone__icon" aria-hidden="true">
+                                <svg class="icon"><use href="../Images/icons.svg#i-gallery-add"/></svg>
+                            </span>
+                            <p class="dropzone__title">Drag &amp; drop a leaf photo</p>
+                            <p class="dropzone__sub">or <span class="dropzone__browse">browse your files</span> · JPG, PNG or WebP</p>
+                        </div>
+                        <figure class="dropzone__preview" id="imageContainer" hidden>
+                            <img id="previewImg" alt="">
+                            <span class="scanline" aria-hidden="true"></span>
+                            <figcaption id="previewName"></figcaption>
+                        </figure>
+                        <div class="dropzone__drag" aria-hidden="true">
+                            <svg class="icon"><use href="../Images/icons.svg#i-image-up"/></svg>Drop to upload
+                        </div>
+                    </div>
+                    <input type="file" id="imageInput" class="visually-hidden" accept="image/*" tabindex="-1">
+
+                    <button type="button" class="btn btn--accent btn--lg run-btn" id="runBtn" disabled>
+                        <svg class="icon"><use href="../Images/icons.svg#i-scan"/></svg>
+                        <span id="runLabel">Run diagnosis</span>
+                    </button>
+
+                    <div class="samples">
+                        <p class="samples__label">
+                            <svg class="icon"><use href="../Images/icons.svg#i-gallery"/></svg>
+                            No photo handy? Try a sample leaf
+                        </p>
+                        <div class="samples__grid" id="samples">
+                            <button type="button" class="sample" data-src="demo/tomato-late-blight.jpg" data-name="Tomato leaf">
+                                <img src="demo/tomato-late-blight.jpg" alt="" width="256" height="256" loading="lazy"><span>Tomato</span></button>
+                            <button type="button" class="sample" data-src="demo/apple-scab.jpg" data-name="Apple leaf">
+                                <img src="demo/apple-scab.jpg" alt="" width="256" height="256" loading="lazy"><span>Apple</span></button>
+                            <button type="button" class="sample" data-src="demo/corn-common-rust.jpg" data-name="Corn leaf">
+                                <img src="demo/corn-common-rust.jpg" alt="" width="256" height="256" loading="lazy"><span>Corn</span></button>
+                            <button type="button" class="sample" data-src="demo/grape-black-rot.jpg" data-name="Grape leaf">
+                                <img src="demo/grape-black-rot.jpg" alt="" width="256" height="256" loading="lazy"><span>Grape</span></button>
+                            <button type="button" class="sample" data-src="demo/potato-early-blight.jpg" data-name="Potato leaf">
+                                <img src="demo/potato-early-blight.jpg" alt="" width="256" height="256" loading="lazy"><span>Potato</span></button>
+                            <button type="button" class="sample" data-src="demo/strawberry-healthy.jpg" data-name="Strawberry leaf">
+                                <img src="demo/strawberry-healthy.jpg" alt="" width="256" height="256" loading="lazy"><span>Strawberry</span></button>
+                        </div>
+                        <p class="samples__credit">Sample photos: <a href="https://github.com/spMohanty/PlantVillage-Dataset"
+                                target="_blank" rel="noopener">PlantVillage dataset</a>, CC BY-SA 3.0.</p>
+                    </div>
+                </div>
+
+                <!-- Report -->
+                <div class="panel report" data-reveal style="--d:.12s" aria-live="polite">
+                    <div class="panel__head">
+                        <h2 class="panel__title">2. Diagnostic report</h2>
+                        <span class="tag" id="reportState">Waiting</span>
+                    </div>
+
+                    <div class="report__empty" id="reportEmpty">
+                        <span class="report__empty-icon" aria-hidden="true">
+                            <svg class="icon"><use href="../Images/icons.svg#i-microscope"/></svg>
+                        </span>
+                        <p class="report__empty-title">No diagnosis yet</p>
+                        <p class="desc">Add a leaf photo or pick a sample, and the result with a recommended treatment
+                            will appear here.</p>
+                    </div>
+
+                    <div class="report__result" id="reportResult" hidden>
+                        <p class="report__crop" id="resultCrop"></p>
+                        <h3 class="report__condition" id="resultCondition"></h3>
+                        <span class="badge" id="resultBadge"></span>
+
+                        <div class="confidence">
+                            <div class="confidence__row">
+                                <span>Model confidence</span>
+                                <strong id="resultConfidence">0%</strong>
+                            </div>
+                            <div class="confidence__bar"><span id="confidenceFill"></span></div>
+                        </div>
+
+                        <div class="treatment">
+                            <p class="treatment__label">
+                                <svg class="icon"><use href="../Images/icons.svg#i-heart-pulse"/></svg>Recommended treatment
+                            </p>
+                            <p id="treatmentText" class="treatment__text"></p>
+                        </div>
+
+                        <div class="alternatives">
+                            <p class="alternatives__label">Other possibilities</p>
+                            <ul id="resultAlternatives"></ul>
+                        </div>
+                    </div>
+
+                    <p class="report__note">
+                        <svg class="icon"><use href="../Images/icons.svg#i-lamp"/></svg>
+                        Recommendations are general guidance. Check with your local agricultural extension service
+                        before applying any treatment.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ============================== CONTACT / FOOTER (same as home) ============================== -->
+    <footer class="footer" id="contact">
+        <canvas class="particles" data-particles aria-hidden="true"></canvas>
+
+        <div class="container footer__top">
+            <div>
+                <p class="eyebrow eyebrow--light" data-reveal>Contact</p>
+                <h2 class="section-title section-title--light" data-split>Questions, feedback or partnerships?</h2>
+                <a class="footer__email" href="mailto:xukyosho@gmail.com" data-reveal style="--d:.15s">
+                    <svg class="icon"><use href="../Images/icons.svg#i-mail"/></svg>xukyosho@gmail.com
+                </a>
+                <ul class="socials" data-reveal style="--d:.25s">
+                    <li><a class="social" href="https://www.linkedin.com/in/yashchaurasia01/" target="_blank" rel="noopener" data-tooltip="LinkedIn" aria-label="LinkedIn">
+                        <span class="social__icon"><svg class="icon"><use href="../Images/icons.svg#fa-linkedin-in"/></svg></span><span class="social__label">LinkedIn</span>
+                        <svg class="social__arrow"><use href="../Images/icons.svg#i-arrow-up-right"/></svg></a></li>
+                    <li><a class="social" href="https://www.instagram.com/yashc.exe/" target="_blank" rel="noopener" data-tooltip="Instagram" aria-label="Instagram">
+                        <span class="social__icon"><svg class="icon"><use href="../Images/icons.svg#fa-instagram"/></svg></span><span class="social__label">Instagram</span>
+                        <svg class="social__arrow"><use href="../Images/icons.svg#i-arrow-up-right"/></svg></a></li>
+                    <li><a class="social" href="https://github.com/YashChaurasia01" target="_blank" rel="noopener" data-tooltip="GitHub" aria-label="GitHub">
+                        <span class="social__icon"><svg class="icon"><use href="../Images/icons.svg#fa-github"/></svg></span><span class="social__label">GitHub</span>
+                        <svg class="social__arrow"><use href="../Images/icons.svg#i-arrow-up-right"/></svg></a></li>
+                    <li><a class="social" href="https://yashexe.vercel.app" target="_blank" rel="noopener" data-tooltip="Portfolio" aria-label="Portfolio">
+                        <span class="social__icon"><svg class="icon"><use href="../Images/icons.svg#fa-globe"/></svg></span><span class="social__label">Portfolio</span>
+                        <svg class="social__arrow"><use href="../Images/icons.svg#i-arrow-up-right"/></svg></a></li>
+                </ul>
+            </div>
+            <img src="../Images/support.webp" alt="Illustration of a support agent on a video call"
+                width="960" height="836" loading="lazy" decoding="async" class="footer__img" data-reveal style="--d:.15s">
+        </div>
+
+        <p class="footer__word" aria-hidden="true" data-spotlight data-text="CropCure">CropCure</p>
+
+        <div class="container footer__bottom">
+            <a href="../" class="brand" aria-label="CropCure home">
+                <img src="../Images/logo-sprout.webp" alt="" width="22" height="30" class="brand__mark">
+                <span class="brand__word">CropCure</span>
+            </a>
+            <p>© <span data-year>2026</span> CropCure by Yash. All rights reserved.</p>
+            <p class="footer__made">Designed with <svg class="icon icon--heart"><use href="../Images/icons.svg#i-heart"/></svg> by Natsu</p>
+            <a href="#top" class="to-top" aria-label="Back to top" data-tooltip="Back to top">
+                <svg class="icon"><use href="../Images/icons.svg#i-arrow-up"/></svg>
+            </a>
+        </div>
+    </footer>
+</body>
+
+</html>
