@@ -23,47 +23,8 @@
         'Tomato___Tomato_Yellow_Leaf_Curl_Virus', 'Tomato___Tomato_mosaic_virus', 'Tomato___healthy'
     ];
 
-    // Raw label -> treatment
-    const treatments = {
-        'Apple___Apple_scab': 'Use fungicides like captan or mancozeb, and prune infected branches.',
-        'Apple___Black_rot': 'Apply fungicides such as thiophanate-methyl and avoid overhead irrigation.',
-        'Apple___Cedar_apple_rust': 'Use fungicides like myclobutanil and remove nearby juniper trees.',
-        'Apple___healthy': 'No treatment required.',
-        'Blueberry___healthy': 'No treatment required.',
-        'Cherry_(including_sour)___Powdery_mildew': 'Use fungicides like sulfur or copper-based products.',
-        'Cherry_(including_sour)___healthy': 'No treatment required.',
-        'Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot': 'Use fungicides such as azoxystrobin and manage crop residue.',
-        'Corn_(maize)___Common_rust_': 'Apply fungicides and plant resistant hybrids.',
-        'Corn_(maize)___Northern_Leaf_Blight': 'Apply foliar fungicides and rotate crops.',
-        'Corn_(maize)___healthy': 'No treatment required.',
-        'Grape___Black_rot': 'Prune and remove diseased plant material, then apply fungicides.',
-        'Grape___Esca_(Black_Measles)': 'Prune out infected areas and apply fungicides.',
-        'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)': 'Apply fungicides and maintain good airflow around vines.',
-        'Grape___healthy': 'No treatment required.',
-        'Orange___Haunglongbing_(Citrus_greening)': 'No cure is available. Manage the insect vector with pesticides and remove infected trees.',
-        'Peach___Bacterial_spot': 'Apply copper-based sprays and avoid overhead irrigation.',
-        'Peach___healthy': 'No treatment required.',
-        'Pepper,_bell___Bacterial_spot': 'Use resistant varieties and apply copper-based bactericides.',
-        'Pepper,_bell___healthy': 'No treatment required.',
-        'Potato___Early_blight': 'Apply fungicides and practise crop rotation.',
-        'Potato___Late_blight': 'Use fungicides like mancozeb and ensure proper field drainage.',
-        'Potato___healthy': 'No treatment required.',
-        'Raspberry___healthy': 'No treatment required.',
-        'Soybean___healthy': 'No treatment required.',
-        'Squash___Powdery_mildew': 'Apply sulfur-based or potassium bicarbonate fungicides.',
-        'Strawberry___Leaf_scorch': 'Remove infected leaves and apply fungicides.',
-        'Strawberry___healthy': 'No treatment required.',
-        'Tomato___Bacterial_spot': 'Apply copper-based sprays and avoid overhead irrigation.',
-        'Tomato___Early_blight': 'Apply fungicides and keep good plant spacing for airflow.',
-        'Tomato___Late_blight': 'Use fungicides and destroy infected plants immediately.',
-        'Tomato___Leaf_Mold': 'Apply fungicides and ensure proper ventilation.',
-        'Tomato___Septoria_leaf_spot': 'Use fungicides and rotate crops annually.',
-        'Tomato___Spider_mites Two-spotted_spider_mite': 'Apply insecticidal soap or miticides.',
-        'Tomato___Target_Spot': 'Apply fungicides and remove infected leaves.',
-        'Tomato___Tomato_Yellow_Leaf_Curl_Virus': 'There is no cure. Control whiteflies and use resistant varieties.',
-        'Tomato___Tomato_mosaic_virus': 'There is no cure. Remove infected plants and disinfect tools.',
-        'Tomato___healthy': 'No treatment required.'
-    };
+    // Raw label -> treatment plan { summary, steps, products } — see model/treatments.js
+    const treatments = window.CROPCURE_TREATMENTS || {};
 
     /* ---------------------------------------------------------
        Sample results, computed in advance by this same model
@@ -443,17 +404,72 @@
         setTimeout(() => { fill.style.width = (top.p * 100).toFixed(1) + '%'; }, reduceMotion || instant ? 0 : fillAt * 1000);
         t += 0.3;
 
+        // ---- Treatment plan: summary → action plan → recommended products ----
+        const plan = treatments[top.label];
+        const isHealthyPlan = !!(plan && plan.healthy);
         const treatmentBox = document.querySelector('.treatment');
+        treatmentBox.classList.toggle('is-healthy', isHealthyPlan);
+        $('treatmentLabelText').textContent = isHealthyPlan ? 'Keep it healthy' : 'Recommended treatment';
         revealBlock(treatmentBox, t);
+
         const treatmentEl = $('treatmentText');
-        t = generate(treatmentEl, treatments[top.label] || 'No treatment information available.', t + 0.2, 0.06);
-        if (!reduceMotion && !instant) {           // blinking caret while the treatment is "being written"
+        t = generate(treatmentEl, plan ? plan.summary : 'No treatment information available.', t + 0.2, 0.035);
+        if (!reduceMotion && !instant) {           // blinking caret while the summary is "being written"
             const caret = document.createElement('span');
             caret.className = 'gen-caret';
-            caret.style.setProperty('--caret-end', (t + 0.6).toFixed(2) + 's');
+            caret.style.setProperty('--caret-end', (t + 0.4).toFixed(2) + 's');
             treatmentEl.append(caret);
         }
-        t += 0.3;
+        t += 0.25;
+
+        // Action plan — each step streams in after the previous one
+        const stepsWrap = $('treatmentSteps');
+        const stepsList = stepsWrap.querySelector('ol');
+        const steps = (plan && plan.steps) || [];
+        stepsList.replaceChildren();
+        stepsWrap.hidden = !steps.length;
+        if (steps.length) {
+            revealBlock(stepsWrap, t);
+            t += 0.15;
+            steps.forEach(text => {
+                const li = document.createElement('li');
+                const span = document.createElement('span');
+                li.append(span);
+                stepsList.append(li);
+                revealBlock(li, t);
+                t = generate(span, text, t, 0.018) + 0.08;
+            });
+        }
+
+        // Recommended products — active ingredient, type and example brands
+        const productsWrap = $('treatmentProducts');
+        const productsList = productsWrap.querySelector('ul');
+        const products = (plan && plan.products) || [];
+        productsList.replaceChildren();
+        productsWrap.hidden = !products.length;
+        if (products.length) {
+            t += 0.1;
+            revealBlock(productsWrap, t);
+            t += 0.15;
+            products.forEach(prod => {
+                const li = document.createElement('li');
+                li.className = 'product';
+                const name = document.createElement('strong');
+                name.className = 'product__name';
+                name.textContent = prod.name;
+                const type = document.createElement('span');
+                type.className = 'product__type';
+                type.textContent = prod.type;
+                const brands = document.createElement('span');
+                brands.className = 'product__brands';
+                brands.textContent = 'e.g. ' + prod.brands;
+                li.append(name, type, brands);
+                productsList.append(li);
+                revealBlock(li, t);
+                t += 0.08;
+            });
+        }
+        t += 0.2;
 
         revealBlock(document.querySelector('.alternatives__label'), t);
         const list = $('resultAlternatives');

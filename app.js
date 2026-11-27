@@ -588,7 +588,7 @@
                 document.head.append(rules);
                 prefetch(samples);                       // lazy sample thumbnails aren't fetched during prerender
             } else {
-                prefetch([modelBase, `${modelBase}styles.css`, `${modelBase}script.js`, ...samples]);
+                prefetch([modelBase, `${modelBase}styles.css`, `${modelBase}treatments.js`, `${modelBase}script.js`, ...samples]);
             }
         };
 
