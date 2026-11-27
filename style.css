@@ -1393,7 +1393,7 @@ html.no-scroll .scrollbar {
     grid-template-columns: 1.35fr .65fr;
     align-items: center;
     gap: 40px;
-    padding-bottom: 64px;
+    padding-bottom: 30px;
 }
 
 .footer__email {
@@ -1570,15 +1570,14 @@ html.no-scroll .scrollbar {
 .footer__word {
     position: relative;
     font-family: var(--font-display);
-    font-size: clamp(4rem, 17vw, 15rem);
+    font-size: clamp(4rem, 15vw, 15rem);
     font-weight: 900;
-    line-height: .9;
-    letter-spacing: -0.04em;
+    line-height: 1.1;
+    letter-spacing: 0.04em;
     text-align: center;
     color: transparent;
     -webkit-text-stroke: 1.5px rgba(255, 255, 255, .16);
     user-select: none;
-    margin-bottom: -.14em;
 }
 
 .footer__word::after {
