@@ -693,6 +693,45 @@ html.no-scroll .scrollbar {
     min-height: 100svh;
     display: flex;
     flex-direction: column;
+    background: var(--brand-900);   /* the glow now lives in the drifting layers below */
+}
+
+/* Floating gradient background: two soft glow layers drifting slowly at
+   different speeds, behind the particles (z -2 vs the canvas at z -1). */
+.hero--home::before,
+.hero--home::after {
+    content: "";
+    position: absolute;
+    inset: -25%;
+    z-index: -2;
+    pointer-events: none;
+    will-change: transform;
+}
+
+.hero--home::before {
+    background:
+        radial-gradient(36% 40% at 80% 18%, rgba(10, 143, 85, .55), transparent 70%),
+        radial-gradient(30% 34% at 16% 82%, rgba(200, 241, 105, .12), transparent 70%);
+    animation: hero-drift-a 26s ease-in-out infinite alternate;
+}
+
+.hero--home::after {
+    background:
+        radial-gradient(32% 36% at 30% 26%, rgba(16, 120, 74, .38), transparent 70%),
+        radial-gradient(28% 32% at 70% 78%, rgba(10, 143, 85, .3), transparent 70%);
+    animation: hero-drift-b 34s ease-in-out infinite alternate;
+}
+
+@keyframes hero-drift-a {
+    0% { transform: translate3d(0, 0, 0) scale(1); }
+    50% { transform: translate3d(-6%, 5%, 0) scale(1.08); }
+    100% { transform: translate3d(5%, -4%, 0) scale(1.02); }
+}
+
+@keyframes hero-drift-b {
+    0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+    50% { transform: translate3d(7%, -5%, 0) rotate(8deg); }
+    100% { transform: translate3d(-5%, 6%, 0) rotate(-5deg); }
 }
 
 .hero__inner {

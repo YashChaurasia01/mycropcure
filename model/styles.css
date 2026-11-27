@@ -496,6 +496,32 @@
     color: var(--brand-600);
 }
 
+/* Where the result came from: live model vs pre-computed sample */
+.report__source {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 12px;
+    font-size: .8rem;
+    color: var(--muted);
+}
+
+.report__source::before {
+    content: "";
+    flex: none;
+    width: 8px;
+    height: 8px;
+    margin-top: 5px;
+    border-radius: 50%;
+    background: var(--accent-ink);
+    box-shadow: 0 0 0 3px rgba(200, 241, 105, .55);
+}
+
+.report__source.is-precomputed::before {
+    background: var(--accent);
+    box-shadow: 0 0 0 3px rgba(200, 241, 105, .35);
+}
+
 .confidence {
     margin-top: 24px;
 }

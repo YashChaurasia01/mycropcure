@@ -66,6 +66,39 @@
     };
 
     /* ---------------------------------------------------------
+       Sample results, computed in advance by this same model
+       (top 3 per sample photo). Lets the samples answer instantly
+       while the ~124 MB model is still downloading. If you replace
+       the model or the sample photos, regenerate these.
+    --------------------------------------------------------- */
+    const SAMPLE_RESULTS = {
+        'demo/tomato-late-blight.jpg': [
+            { label: 'Tomato___Late_blight', p: 0.998 },
+            { label: 'Pepper,_bell___healthy', p: 0.001774 },
+            { label: 'Tomato___Early_blight', p: 0.0001667 }],
+        'demo/apple-scab.jpg': [
+            { label: 'Apple___Apple_scab', p: 1 },
+            { label: 'Peach___Bacterial_spot', p: 8.926e-8 },
+            { label: 'Apple___healthy', p: 8.166e-8 }],
+        'demo/corn-common-rust.jpg': [
+            { label: 'Corn_(maize)___Common_rust_', p: 1 },
+            { label: 'Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot', p: 3.368e-23 },
+            { label: 'Apple___Apple_scab', p: 4.136e-25 }],
+        'demo/grape-black-rot.jpg': [
+            { label: 'Grape___Black_rot', p: 1 },
+            { label: 'Grape___Esca_(Black_Measles)', p: 3.144e-10 },
+            { label: 'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)', p: 7.837e-14 }],
+        'demo/potato-early-blight.jpg': [
+            { label: 'Potato___Early_blight', p: 0.9999 },
+            { label: 'Strawberry___Leaf_scorch', p: 0.00003729 },
+            { label: 'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)', p: 0.00001858 }],
+        'demo/strawberry-healthy.jpg': [
+            { label: 'Strawberry___healthy', p: 1 },
+            { label: 'Pepper,_bell___healthy', p: 0.00001669 },
+            { label: 'Blueberry___healthy', p: 0.000006307 }]
+    };
+
+    /* ---------------------------------------------------------
        Readable names: "Corn_(maize)___Common_rust_" -> Corn (maize) · Common rust
     --------------------------------------------------------- */
     const CROP_NAMES = {
@@ -277,8 +310,26 @@
         const name = btn.dataset.name + ' (sample)';
         await showImage(btn.dataset.src, name);
         save({ src: btn.dataset.src, name, sample: btn.dataset.src, result: null });
-        detect();
+        // Live model ready? run it. Still downloading? answer instantly from the stored result.
+        if (model) detect();
+        else instantSample(btn.dataset.src);
     }));
+
+    async function instantSample(src) {
+        const ranked = SAMPLE_RESULTS[src];
+        if (!ranked) { detect(); return; }
+        busy = true;
+        updateRunButton();
+        setReportState('Analysing', 'is-working');
+        dropzone.classList.add('is-scanning');
+        await new Promise(r => setTimeout(r, 700));     // brief scan so the result doesn't just flash in
+        dropzone.classList.remove('is-scanning');
+        busy = false;
+        updateRunButton();
+        render(ranked, 'precomputed');
+        setReportState('Complete', 'is-ready');
+        save({ result: ranked, source: 'precomputed' });
+    }
 
     resetBtn.addEventListener('click', e => { e.stopPropagation(); reset(); });
     runBtn.addEventListener('click', detect);
@@ -311,9 +362,9 @@
             const ranked = [...probs]
                 .map((p, i) => ({ p, label: classes[i] }))
                 .sort((a, b) => b.p - a.p);
-            render(ranked);
+            render(ranked, 'live');
             setReportState('Complete', 'is-ready');
-            save({ result: ranked.slice(0, 3).map(({ p, label }) => ({ p, label })) });
+            save({ result: ranked.slice(0, 3).map(({ p, label }) => ({ p, label })), source: 'live' });
         } catch (err) {
             console.error(err);
             setReportState('Error');
@@ -357,9 +408,15 @@
         el.classList.add('gen-block');
     }
 
-    function render(ranked) {
+    function render(ranked, source = 'live') {
         const top = ranked[0];
         const info = formatLabel(top.label);
+
+        const sourceEl = $('resultSource');
+        sourceEl.textContent = source === 'precomputed'
+            ? 'Instant sample result, computed in advance by this same model. Upload your own photo to run it live.'
+            : 'Analysed live in your browser.';
+        sourceEl.classList.toggle('is-precomputed', source === 'precomputed');
         const pct = v => {
             const p = v * 100;
             return (p >= 99.95 ? '>99.9' : p < 0.05 ? '<0.1' : p.toFixed(1)) + '%';
@@ -431,7 +488,7 @@
         samples.forEach(s => s.classList.toggle('is-active', s.dataset.src === saved.sample));
         if (Array.isArray(saved.result) && saved.result.length && classes.includes(saved.result[0].label)) {
             instant = true;
-            render(saved.result);
+            render(saved.result, saved.source || 'live');
             instant = false;
             setReportState('Complete', 'is-ready');
         }

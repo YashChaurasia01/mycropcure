@@ -10,6 +10,9 @@
 (() => {
     'use strict';
 
+    // Location of this script — the service worker sits next to it at the site root
+    const APP_SCRIPT_URL = document.currentScript ? document.currentScript.src : new URL('app.js', location.href).href;
+
     /* ---------------------------------------------------------
        1. Helpers
     --------------------------------------------------------- */
@@ -509,35 +512,50 @@
     $$('[data-year]').forEach(el => { el.textContent = new Date().getFullYear(); });
 
     /* ---------------------------------------------------------
-       13. Warm the diagnosis model in the background (home page).
+       13. Service worker (sw.js) — stores the model in Cache Storage
+           so it is downloaded once and then loads from disk on every
+           later visit. `swControl` resolves once this page's requests
+           go through it (or after a short timeout without it).
+    --------------------------------------------------------- */
+    const swControl = (() => {
+        if (!('serviceWorker' in navigator) || !/^https?:$/.test(location.protocol)) return Promise.resolve(false);
+        const registered = navigator.serviceWorker.register(new URL('sw.js', APP_SCRIPT_URL).href).catch(() => null);
+        return registered.then(reg => new Promise(resolve => {
+            if (!reg) return resolve(false);
+            if (navigator.serviceWorker.controller) return resolve(true);
+            navigator.serviceWorker.addEventListener('controllerchange', () => resolve(true), { once: true });
+            setTimeout(() => resolve(!!navigator.serviceWorker.controller), 4000);
+        }));
+    })();
+
+    /* ---------------------------------------------------------
+       14. Warm the diagnosis model in the background (home page).
            <body data-preload-model="model/"> opts in. As soon as the
            page has finished loading, the TF.js runtime and the model
-           files (~124 MB) are downloaded at low priority into the
-           browser cache, so the model page starts almost instantly.
-           Skipped only when the visitor has Data Saver on.
+           files (~124 MB) are downloaded at low priority through the
+           service worker into Cache Storage, so the model page starts
+           almost instantly. Skipped only when Data Saver is on.
     --------------------------------------------------------- */
     const modelBase = document.body.dataset.preloadModel;
     if (modelBase) {
         // Only an explicit Data Saver setting opts a visitor out
         const constrained = !!(navigator.connection && navigator.connection.saveData);
+        const TFJS_URL = 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js'; // same URL as model/index.html
         let started = false;
 
         const warmModel = async () => {
             if (started || constrained) return;
             started = true;
 
-            const runtime = document.createElement('link');
-            runtime.rel = 'prefetch';
-            runtime.as = 'script';
-            runtime.href = 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js'; // same URL/mode as model/index.html
-            document.head.append(runtime);
+            await swControl;                                         // route downloads through the cache
 
             try {
+                fetch(TFJS_URL, { mode: 'no-cors', priority: 'low' }).catch(() => {});
                 const dir = modelBase + 'tfjs_model/';
                 const manifest = await fetch(dir + 'model.json', { priority: 'low' }).then(r => r.json());
                 const files = manifest.weightsManifest.flatMap(g => g.paths);
-                for (let i = 0; i < files.length; i += 2) {           // two shards at a time
-                    await Promise.all(files.slice(i, i + 2).map(p =>
+                for (let i = 0; i < files.length; i += 4) {           // four shards at a time
+                    await Promise.all(files.slice(i, i + 4).map(p =>
                         fetch(dir + p, { priority: 'low' }).then(r => r.arrayBuffer())));
                 }
             } catch (err) {
