@@ -36,7 +36,7 @@
 
 .tool__grid {
     display: grid;
-    grid-template-columns: 1.05fr .95fr;
+    grid-template-columns: 1fr;
     gap: 20px;
     align-items: start;
 }
@@ -373,8 +373,69 @@
 
 /* ---------- Report ---------- */
 .report {
-    position: sticky;
-    top: calc(var(--header-h) + 24px);
+    position: relative;
+}
+
+/* ---------- Desktop: one card, report scrolls inside it ---------- */
+@media (min-width: 961px) {
+    .tool__grid {
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+        align-items: stretch;
+        gap: 0;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        box-shadow: var(--shadow-m);
+        overflow: hidden;
+    }
+
+    .tool__grid > .panel {
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        background: transparent;
+    }
+
+    /* The upload column sets the card's height; the report fills exactly that
+       height (contain: size stops its content from growing the row) and its
+       body scrolls when the treatment plan is long. */
+    .report {
+        contain: size;
+        display: flex;
+        flex-direction: column;
+        border-left: 1px solid var(--line);
+        background: linear-gradient(180deg, var(--bg), var(--surface) 55%);
+    }
+
+    .report__body {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        margin-right: -10px;
+        padding-right: 10px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+        scrollbar-color: var(--accent) transparent;
+        /* soft fade at the bottom edge hints there's more to scroll */
+        -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 28px), transparent);
+        mask-image: linear-gradient(180deg, #000 calc(100% - 28px), transparent);
+    }
+
+    .report__body::-webkit-scrollbar { width: 6px; }
+    .report__body::-webkit-scrollbar-thumb { border-radius: 999px; background: var(--accent); }
+    .report__body::-webkit-scrollbar-track { background: transparent; }
+
+    /* Empty state sits in the middle of the column */
+    .report__empty {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .report__body > .report__note {
+        margin-bottom: 28px;      /* clear the bottom fade */
+    }
 }
 
 #reportState.is-ready {

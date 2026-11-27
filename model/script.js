@@ -385,6 +385,8 @@
 
         reportEmpty.hidden = true;
         reportResult.hidden = false;
+        const reportBody = $('reportBody');
+        if (reportBody) reportBody.scrollTop = 0;   // desktop: report scrolls inside the card
 
         let t = 0;
         t = generate($('resultCrop'), info.crop, t, 0.05) + 0.1;

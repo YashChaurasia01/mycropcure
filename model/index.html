@@ -83,7 +83,9 @@
 
         <!-- ============================== TOOL ============================== -->
         <section class="tool" id="tool">
-            <div class="container tool__grid">
+            <div class="container">
+            <!-- On desktop this grid is one card: upload on the left, report on the right -->
+            <div class="tool__grid">
 
                 <!-- Upload -->
                 <div class="panel uploader" data-reveal>
@@ -150,6 +152,8 @@
                         <span class="tag" id="reportState">Waiting</span>
                     </div>
 
+                    <!-- Scrolls inside the card on desktop; data-lenis-prevent keeps wheel scrolling native here -->
+                    <div class="report__body" id="reportBody" data-lenis-prevent>
                     <div class="report__empty" id="reportEmpty">
                         <span class="report__empty-icon" aria-hidden="true">
                             <svg class="icon"><use href="../Images/icons.svg#i-microscope"/></svg>
@@ -210,8 +214,10 @@
                         Recommendations are general guidance. Check with your local agricultural extension service
                         before applying any treatment.
                     </p>
+                    </div><!-- /.report__body -->
                 </div>
-            </div>
+            </div><!-- /.tool__grid -->
+            </div><!-- /.container -->
         </section>
     </main>
 

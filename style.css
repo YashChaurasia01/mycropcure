@@ -595,7 +595,7 @@ html.no-scroll .scrollbar {
     position: absolute;
     left: 0;
     z-index: -1;
-    border-radius: var(--radius-sm);
+    border-radius: 999px;                    /* fully rounded pill — nav only */
     background: var(--accent);               /* same lime as the site's buttons */
     box-shadow: 0 8px 20px -10px rgba(200, 241, 105, .7);
     opacity: 0;
@@ -609,8 +609,8 @@ html.no-scroll .scrollbar {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 9px 13px;
-    border-radius: var(--radius-sm);
+    padding: 9px 14px;
+    border-radius: 999px;                    /* matches the pill-shaped active indicator */
     font-size: .92rem;
     font-weight: 500;
     opacity: .82;
